@@ -1,0 +1,35 @@
+{
+  "manifest": {
+    "apis": {
+      "custom": {
+        "endpoint": {
+          "uri": "arn:aws:lambda:us-east-1:964129824268:function:28ffa207-89c2-4727-bb1d-2d9cc348f809:Release_0"
+        },
+        "regions": {
+          "EU": {
+            "endpoint": {
+              "uri": "arn:aws:lambda:eu-west-1:964129824268:function:28ffa207-89c2-4727-bb1d-2d9cc348f809:Release_0"
+            }
+          },
+          "NA": {
+            "endpoint": {
+              "uri": "arn:aws:lambda:us-east-1:964129824268:function:28ffa207-89c2-4727-bb1d-2d9cc348f809:Release_0"
+            }
+          },
+          "FE": {
+            "endpoint": {
+              "uri": "arn:aws:lambda:us-west-2:964129824268:function:28ffa207-89c2-4727-bb1d-2d9cc348f809:Release_0"
+            }
+          }
+        }
+      }
+    },
+    "publishingInformation": {
+      "locales": {
+        "en-US": {
+          "name": "boatusersskillsboatuserskills"
+        }
+      }
+    }
+  }
+}
