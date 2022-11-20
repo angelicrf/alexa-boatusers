@@ -30,7 +30,7 @@ const callThisResponse = (thisCtnResult, thisHdResponse, thisToken) => {
           type: "BearerToken",
           token: thisToken,
         },
-        endpointId: "sample-bulb-01",
+        endpointId: "my-shelly-switch-01",
       },
       payload: {},
     },

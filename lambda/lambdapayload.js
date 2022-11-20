@@ -1,18 +1,18 @@
 module.exports = thisPayload = {
   endpoints: [
     {
-      endpointId: "sample-bulb-01",
-      manufacturerName: "Smart Device Company",
-      friendlyName: "Livingroom lamp",
-      description: "Virtual smart light bulb",
-      displayCategories: ["LIGHT"],
+      endpointId: "my-shelly-switch-01",
+      manufacturerName: "Shelly",
+      friendlyName: "client shelly switch",
+      description: "Shelly Smart Plug",
+      displayCategories: ["SWITCH"],
       additionalAttributes: {
-        manufacturer: "Sample Manufacturer",
-        model: "Sample Model",
-        serialNumber: "U11112233456",
-        firmwareVersion: "1.24.2546",
+        manufacturer: "Alterco Robotics",
+        model: "Shelly Plug Model",
+        serialNumber: "083af200732c",
+        firmwareVersion: "20221024-141933/0.11.4-ga1906a2",
         softwareVersion: "1.036",
-        customIdentifier: "Sample custom ID",
+        customIdentifier: "Shelly smart plug custom ID",
       },
       cookie: {
         key1: "arbitrary key/value pairs for skill to reference this endpoint.",
