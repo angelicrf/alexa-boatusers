@@ -1,260 +1,84 @@
-const Alexa = require("ask-sdk-core");
+let payload = {};
+let header = null;
+let { thisPayload } = require("./lambdapayload");
+let {
+  thisContextResult,
+  callThisResponse,
+  thisPowerResult,
+} = require("./lambdaproperties");
 
-const LaunchRequestHandler = {
-  canHandle(handlerCallBackInput) {
-    return (
-      Alexa.getRequestType(handlerCallBackInput.requestEnvelope) ===
-      "LaunchRequest"
-    );
-  },
-  handle(handlerCallBackInput) {
-    return BoatSkillsResponseFunction(
-      handlerCallBackInput,
-      "Welcome to angelique new boat skills, you can say start boat users or start app or Help. Which would you like to try?"
-    );
-  },
-};
-
-const BoatSkillInitialIntentHandler = {
-  canHandle(useInput) {
-    return BoatSkillsRequestFunction(
-      useInput,
-      "IntentRequest",
-      "BoatUsersStart"
-    );
-  },
-  handle(useInput) {
-    return BoatSkillsResponseFunction(useInput, "boat users skills is started");
-  },
-};
-const BoatSkillInfoIntentHandler = {
-  canHandle(useInput) {
-    return BoatSkillsRequestFunction(
-      useInput,
-      "IntentRequest",
-      "BoatUsersInfo"
-    );
-  },
-  handle(useInput) {
-    return BoatSkillsResponseFunction(useInput, "boat users skills is Info");
-  },
-};
-const HelpIntentHandler = {
-  canHandle(useInput) {
-    return BoatSkillsRequestFunction(
-      useInput,
-      "IntentRequest",
-      "AMAZON.HelpIntent"
-    );
-  },
-  handle(useInput) {
-    return BoatSkillsResponseFunction(
-      useInput,
-      "You can say start app or start boat skills! How can I help?"
-    );
-  },
+const handleAuthorization = (request, context) => {
+  // Send the AcceptGrant response
+  payload = {};
+  header = request.directive.header;
+  header.name = "AcceptGrant.Response";
+  log("DEBUG", "AcceptGrant Response: ", JSON.stringify({ header, payload }));
+  context.succeed({ event: { header, payload } });
 };
 
-const CancelAndStopIntentHandler = {
-  canHandle(handlerCallBackInput) {
-    return (
-      Alexa.getRequestType(handlerCallBackInput.requestEnvelope) ===
-        "IntentRequest" &&
-      (Alexa.getIntentName(handlerCallBackInput.requestEnvelope) ===
-        "AMAZON.CancelIntent" ||
-        Alexa.getIntentName(handlerCallBackInput.requestEnvelope) ===
-          "AMAZON.StopIntent")
-    );
-  },
-  handle(handlerCallBackInput) {
-    return BoatSkillsResponseFunction(handlerCallBackInput, "Goodbye");
-  },
-};
-const BoatUserTurnOnSkillIntentHandler = {
-  canHandle(useInput) {
-    return BoatSkillsRequestFunction(
-      useInput,
-      "IntentRequest",
-      "BUSwitchOneTurnOnSkill"
-    );
-  },
-  handle(useInput) {
-    return BoatSkillsResponseFunction(useInput, "Boat switch one is turned on");
-  },
-};
-const BoatUserTurnOffSkillIntentHandler = {
-  canHandle(useInput) {
-    return BoatSkillsRequestFunction(
-      useInput,
-      "IntentRequest",
-      "BUSwitchOneTurnOffSkill"
-    );
-  },
-  handle(useInput) {
-    return BoatSkillsResponseFunction(
-      useInput,
-      "Boat switch one is turned off"
-    );
-  },
-};
-const FallbackIntentHandler = {
-  canHandle(handlerCallBackInput) {
-    return BoatSkillsRequestFunction(
-      handlerCallBackInput,
-      "IntentRequest",
-      "AMAZON.FallbackIntent"
-    );
-  },
-  handle(handlerCallBackInput) {
-    return BoatSkillsResponseFunction(
-      handlerCallBackInput,
-      "Sorry, Unrecognized command. Please try again."
-    );
-  },
+const handleDiscovery = (request, context) => {
+  // Send the discovery response
+  payload = thisPayload;
+  header = request.directive.header;
+  header.name = "Discover.Response";
+  log("DEBUG", "Discovery Response: ", JSON.stringify({ header, payload }));
+  context.succeed({ event: { header, payload } });
 };
 
-const SessionEndedRequestHandler = {
-  canHandle(handlerCallBackInput) {
-    return (
-      Alexa.getRequestType(handlerCallBackInput.requestEnvelope) ===
-      "SessionEndedRequest"
-    );
-  },
-  handle(handlerCallBackInput) {
-    console.log(
-      `Session ended: ${JSON.stringify(handlerCallBackInput.requestEnvelope)}`
-    );
-    // Any cleanup logic goes here.
-    return handlerCallBackInput.responseBuilder.getResponse(); // notice we send an empty response
-  },
+const log = (message, message1, message2) =>
+  console.log(message + message1 + message2);
+
+const handlePowerControl = (request, context) => {
+  // get device ID passed in during discovery
+  let requestMethod = request.directive.header.name;
+  let responseHeader = request.directive.header;
+  responseHeader.namespace = "Alexa";
+  responseHeader.name = "Response";
+  responseHeader.messageId = responseHeader.messageId + "-R";
+  // get user token pass in request
+  var requestToken = request.directive.endpoint.scope.token;
+  var powerResult = thisPowerResult;
+
+  if (requestMethod === "TurnOn") {
+    // Make the call to your device cloud for control
+    // powerResult = stubControlFunctionToYourCloud(endpointId, token, request);
+    powerResult = "ON";
+  } else if (requestMethod === "TurnOff") {
+    // Make the call to your device cloud for control and check for success
+    // powerResult = stubControlFunctionToYourCloud(endpointId, token, request);
+    powerResult = "OFF";
+  }
+  // Datetime format for timeOfSample is ISO 8601, `YYYY-MM-DDThh:mm:ssZ`.
+  let contextResult = thisContextResult;
+  let response = callThisResponse(contextResult, responseHeader, requestToken);
+  log("DEBUG", "Alexa.PowerController ", JSON.stringify(response));
+  context.succeed(response);
 };
 
-const IntentReflectorHandler = {
-  canHandle(handlerCallBackInput) {
-    return (
-      Alexa.getRequestType(handlerCallBackInput.requestEnvelope) ===
-      "IntentRequest"
-    );
-  },
-  handle(handlerCallBackInput) {
-    const intentName = Alexa.getIntentName(
-      handlerCallBackInput.requestEnvelope
-    );
-    const speakOutput = `You just triggered ${intentName}`;
+const myAwsCodeCommitRepo = (myRepo) => console.log(myRepo);
 
-    return (
-      handlerCallBackInput.responseBuilder
-        .speak(speakOutput)
-        //.reprompt('add a reprompt if you want to keep the session open for the user to respond')
-        .getResponse()
-    );
-  },
-};
-
-const ErrorHandler = {
-  canHandle() {
-    return true;
-  },
-  handle(handlerCallBackInput, error) {
-    return BoatSkillsResponseFunction(
-      handlerCallBackInput,
-      "Sorry, I had trouble doing what you asked. Please try again."
-    );
-  },
-};
-const BoatSkillsRequestFunction = (
-  handlerInput,
-  thisIntent,
-  thisIntentName
-) => {
-  try {
-    const getIntentRequest =
-      Alexa.getRequestType(handlerInput.requestEnvelope) === `${thisIntent}`;
-    const getBUStartRequest =
-      Alexa.getIntentName(handlerInput.requestEnvelope) === `${thisIntentName}`;
-    console.log(getIntentRequest + getBUStartRequest);
-    return getIntentRequest && getBUStartRequest;
-  } catch (e) {
-    return console.log(e);
+myAwsCodeCommitRepo(
+  "https://git-codecommit.us-east-1.amazonaws.com/v1/repos/07b40eb9-7173-471f-8106-de2b6b7c3ef5"
+);
+exports.handler = (request, context) => {
+  if (
+    request.directive.header.namespace === "Alexa.Discovery" &&
+    request.directive.header.name === "Discover"
+  ) {
+    log("DEBUG:", "Discover request", JSON.stringify(request));
+    handleDiscovery(request, context, "");
+  } else if (request.directive.header.namespace === "Alexa.PowerController") {
+    if (
+      request.directive.header.name === "TurnOn" ||
+      request.directive.header.name === "TurnOff"
+    ) {
+      log("DEBUG:", "TurnOn or TurnOff Request", JSON.stringify(request));
+      handlePowerControl(request, context);
+    }
+  } else if (
+    request.directive.header.namespace === "Alexa.Authorization" &&
+    request.directive.header.name === "AcceptGrant"
+  ) {
+    handleAuthorization(request, context);
   }
 };
-const BoatSkillsResponseFunction = (handlerInput, thismessage) => {
-  try {
-    const speakOutput = `${thismessage}`;
-    console.log(speakOutput);
-    let displayAnswer = handlerInput.responseBuilder
-      .speak(speakOutput)
-      .reprompt(speakOutput)
-      .getResponse();
-    return displayAnswer;
-  } catch (e) {
-    return console.log(e);
-  }
-};
-
-const NotFoundIntentHandler = {
-  canHandle(handlerCallBackInput) {
-    const getIntentRequest =
-      Alexa.getRequestType(handlerCallBackInput.requestEnvelope) ===
-      "IntentRequest";
-    const getBUStartRequest =
-      Alexa.getIntentName(handlerCallBackInput.requestEnvelope) !==
-      "BoatUsersStart";
-    const getBUTurnOnRequest =
-      Alexa.getIntentName(handlerCallBackInput.requestEnvelope) !==
-      "BUSwitchOneTurnOnSkill";
-    const getBUTurnOffRequest =
-      Alexa.getIntentName(handlerCallBackInput.requestEnvelope) !==
-      "BUSwitchOneTurnOffSkill";
-    const getBUInfoRequest =
-      Alexa.getIntentName(handlerCallBackInput.requestEnvelope) !==
-      "BoatUsersInfo";
-    const getFBRequest =
-      Alexa.getIntentName(handlerCallBackInput.requestEnvelope) !==
-      "AMAZON.FallbackIntent";
-    const getCancelRequest =
-      Alexa.getIntentName(handlerCallBackInput.requestEnvelope) !==
-      "AMAZON.CancelIntent";
-    const getStopRequest =
-      Alexa.getIntentName(handlerCallBackInput.requestEnvelope) !==
-      "AMAZON.StopIntent";
-    const getHelpRequest =
-      Alexa.getIntentName(handlerCallBackInput.requestEnvelope) !==
-      "AMAZON.HelpIntent";
-    return (
-      getIntentRequest &&
-      getBUStartRequest &&
-      getHelpRequest &&
-      getStopRequest &&
-      getCancelRequest &&
-      getFBRequest &&
-      getBUInfoRequest &&
-      getBUTurnOnRequest &&
-      getBUTurnOffRequest
-    );
-  },
-  handle(handlerCallBackInput) {
-    const speakOutput = "Not Found Skill";
-
-    return handlerCallBackInput.responseBuilder
-      .speak(speakOutput)
-      .getResponse();
-  },
-};
-
-exports.handler = Alexa.SkillBuilders.custom()
-  .addRequestHandlers(
-    LaunchRequestHandler,
-    NotFoundIntentHandler,
-    BoatSkillInitialIntentHandler,
-    BoatSkillInfoIntentHandler,
-    BoatUserTurnOnSkillIntentHandler,
-    BoatUserTurnOffSkillIntentHandler,
-    HelpIntentHandler,
-    CancelAndStopIntentHandler,
-    FallbackIntentHandler,
-    SessionEndedRequestHandler,
-    IntentReflectorHandler
-  )
-  .addErrorHandlers(ErrorHandler)
-  .lambda();

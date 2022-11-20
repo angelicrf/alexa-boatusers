@@ -1,7 +1,7 @@
 {
   "interactionModel": {
     "languageModel": {
-      "invocationName": "boatusersskillsboatuserskills",
+      "invocationName": "bualexaxaskillsnodeskills",
       "intents": [
         {
           "name": "AMAZON.CancelIntent",
