@@ -1,7 +1,7 @@
 {
   "name": "@amzn/hello-world",
   "version": "1.2.0",
-  "description": "alexa utility for quickly building skills",
+  "description": "alexa utility for building Boat Users Skills",
   "main": "index.js",
   "scripts": {
     "start": "nodemon index"

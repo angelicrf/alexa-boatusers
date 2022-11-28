@@ -1,0 +1,71 @@
+{
+    "event": {
+      "header": {
+        "namespace": "Alexa.Discovery",
+        "name": "Discover.Response",
+        "payloadVersion": "3",
+        "messageId": ""
+      },
+      "payload": {
+        "endpoints": [
+          {
+            "endpointId": "sample-switch-01",
+       "manufacturerName": "Allterco Robotics",
+        "friendlyName": "Boat Switch",
+        "description": "Shelly Smart Plug",
+        "additionalAttributes": {
+          "manufacturer": "Allterco Robotics",
+          "model": "Sample Model",
+          "serialNumber": "U11112233456",
+          "firmwareVersion": "20221024",
+          "softwareVersion": "1",
+          "customIdentifier": "Shelly Plug ID"
+            },
+            "displayCategories": ["SMARTPLUG"],
+            "cookie": {},
+            "capabilities": [
+              {
+                "type": "AlexaInterface",
+                "interface": "Alexa.PowerController",
+                "version": "3",
+                "properties": {
+                  "supported": [
+                    {
+                      "name": "powerState"
+                    }
+                  ],
+                  "proactivelyReported": true,
+                  "retrievable": true
+                }
+              },
+              {
+                "type": "AlexaInterface",
+                "interface": "Alexa.EndpointHealth",
+                "version": "3.2",
+                "properties": {
+                  "supported": [
+                    {
+                      "name": "connectivity"
+                    }
+                  ],
+                  "proactivelyReported": true,
+                  "retrievable": true
+                }
+              },
+              {
+                "type": "AlexaInterface",
+                "interface": "Alexa",
+                "version": "3"
+              }
+            ],
+            "connections": [
+            ]
+          }
+        ],
+        "scope": {
+          "type": "BearerToken",
+          "token": "Atza|IwEBIJm-NynWxrmqvydt6FqAArb1UdEh05miwbFJAel_1t0osP-SjptIksR0BaTYxHRD3d4jcTbWxcDsNufx-NvmquHNPjxLjaxNSQy43-dDn0PKJSjEqU2shFp4zcJyMm3NpSGdkZMzf7R-3aE0RB65jhRJzbiagPeLi0rBkek_STYLmz6AGw2LwjYt-guLM_s0pnbqz7CUZ0z-Qc9HJsJdCwYIzpJTi6KYlDMtVULfn4bWk53g51-7VkJbsQ2mkR_ekazbCi0svpyPrgU7S9Aopat8KT9s9sz-LSDcBPl2JK_sJrWs-D9vHJilX6XxUZiBCQzqhPicQEpPzumEcrWjUGXjSPQbHdUOplv4ftsoVOl6ZVjuhw45_FNMx4rddbmZaVp9VSLZBNBEP9p3t5itxzS7zsIXbZSpbBwPwKaytSR4k9w-NuIHqjMnpBZXm6uj8xrF5X37x915avUXQksWp26Pu9iMIWnvhJ7o1Jt3X4fqJuFdehGg8gUIBdjw_ML2qHBp2ERY7UdIC7K0VIokYa8e2ZjkERXaiMt6ZFQmYxVQyzqaeTIbk4BocapRMnvbNzMHBJ4svaafvMOqsxo4Aw5x"
+        }
+      }
+    }
+  }
