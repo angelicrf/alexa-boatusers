@@ -28,7 +28,20 @@ exports.handler = (request, context) => {
     }
   }
 };
-
+const callChildLambdaFunc = async (thisName) => {
+  const params = {
+    FunctionName: `${thisName}`,
+    InvocationType: "RequestResponse",
+    LogType: "None",
+    Payload: "{}",
+  };
+  const response = await lambda.invoke(params).promise();
+  if (response.StatusCode !== 200) {
+    throw new Error("Failed to get response from lambda function");
+  }
+  log("response", "childFunc", JSON.stringify(response.Payload));
+  return JSON.parse(response.Payload);
+};
 const sendChangeReportEvent = async (thisToken) => {
   return new Promise((resolve, reject) => {
     const data = JSON.stringify({
