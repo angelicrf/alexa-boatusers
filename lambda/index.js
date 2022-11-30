@@ -1,33 +1,7 @@
-exports.handler = (request, context) => {
-  if (
-    request.directive.header.namespace === "Alexa.Discovery" &&
-    request.directive.header.name === "Discover"
-  ) {
-    log("DEBUG:", "Discover request", JSON.stringify(request));
-    handleDiscovery(request, context, "");
-  } else if (request.directive.header.namespace === "Alexa") {
-    if (request.directive.header.name === "ChangeReport") {
-      console.log(JSON.stringify(request));
-      handleChangeReport(request, context);
-    }
-    if (request.directive.header.name === "ReportState") {
-      //console.log(JSON.stringify(request));
-      handleStateReport(request, context);
-    }
-  } else if (request.directive.header.namespace === "Alexa.PowerController") {
-    if (
-      request.directive.header.name === "TurnOn" ||
-      request.directive.header.name === "TurnOff"
-    ) {
-      log("DEBUG:", "TurnOn or TurnOff Request", JSON.stringify(request));
-      handlePowerControl(request, context);
-    }
-  } else if (request.directive.header.namespace === "Alexa.Authorization") {
-    if (request.directive.header.name === "AcceptGrant") {
-      handleAuthorization(request, context);
-    }
-  }
-};
+const AWS = require("aws-sdk");
+const lambda = new AWS.Lambda();
+const myRequest = require("https");
+
 const callChildLambdaFunc = async (thisName) => {
   const params = {
     FunctionName: `${thisName}`,
@@ -410,4 +384,34 @@ const handlePowerControl = (request, context) => {
   };
   log("DEBUG", "Alexa.PowerController ", JSON.stringify(response));
   context.succeed(response);
+};
+exports.handler = (request, context) => {
+  if (
+    request.directive.header.namespace === "Alexa.Discovery" &&
+    request.directive.header.name === "Discover"
+  ) {
+    log("DEBUG:", "Discover request", JSON.stringify(request));
+    handleDiscovery(request, context, "");
+  } else if (request.directive.header.namespace === "Alexa") {
+    if (request.directive.header.name === "ChangeReport") {
+      console.log(JSON.stringify(request));
+      handleChangeReport(request, context);
+    }
+    if (request.directive.header.name === "ReportState") {
+      //console.log(JSON.stringify(request));
+      handleStateReport(request, context);
+    }
+  } else if (request.directive.header.namespace === "Alexa.PowerController") {
+    if (
+      request.directive.header.name === "TurnOn" ||
+      request.directive.header.name === "TurnOff"
+    ) {
+      log("DEBUG:", "TurnOn or TurnOff Request", JSON.stringify(request));
+      handlePowerControl(request, context);
+    }
+  } else if (request.directive.header.namespace === "Alexa.Authorization") {
+    if (request.directive.header.name === "AcceptGrant") {
+      handleAuthorization(request, context);
+    }
+  }
 };
