@@ -1,12 +1,7 @@
 const myRequest = require("https");
-/* const myFech = require("node-fetch").default;
-let url = "https://reqres.in/api/users";
-const tryThisFunction = async () => {
-  let response = await myFech(url);
-  let commits = await response.json();
-  console.log("result", commits[0].author.login);
-}; */
-const tryWithHttps = async (thisToken) => {
+
+exports.handler = async (event) => {
+  let thisAccess = event["thisAccess"];
   return new Promise((resolve, reject) => {
     const data = JSON.stringify({
       event: {
@@ -19,7 +14,7 @@ const tryWithHttps = async (thisToken) => {
         endpoint: {
           scope: {
             type: "BearerToken",
-            token: `${thisToken}`,
+            token: `${thisAccess}`,
           },
           endpointId: "sample-switch-01",
           cookie: {},
@@ -84,8 +79,3 @@ const tryWithHttps = async (thisToken) => {
     req.end();
   });
 };
-
-const getResult = async () => {
-  let getresponse = await tryWithHttps();
-};
-getResult();
