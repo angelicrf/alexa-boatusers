@@ -97,10 +97,12 @@ const sendChangeReportEvent = async (thisToken) => {
 
         res.on("end", () => {
           console.log("Body: ", JSON.parse(data));
+          return resolve(JSON.parse(data));
         });
       })
       .on("error", (err) => {
         console.log("Error: ", err.message);
+        return reject(err.message);
       });
 
     req.write(data);

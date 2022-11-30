@@ -1,7 +1,8 @@
 const myRequest = require("https");
 
-exports.handler = async (event) => {
-  let thisAccess = event["thisAccess"];
+exports.handler = async (event, context) => {
+  let thisAccess = event.authorizationToken.replace("Bearer ", "");
+  //event["thisAccess"];
   return new Promise((resolve, reject) => {
     const data = JSON.stringify({
       event: {
