@@ -4,7 +4,7 @@
   "description": "alexa utility for building Boat Users Skills",
   "main": "index.js",
   "scripts": {
-    "start": "node mytest"
+    "start": "node amazonLogin"
   },
   "author": "Amazon Alexa",
   "license": "Apache License",

@@ -16,6 +16,40 @@ const callChildLambdaFunc = async (thisName) => {
   log("response", "childFunc", JSON.stringify(response.Payload));
   return JSON.parse(response.Payload);
 };
+const getUserProfileInfo = async (thisToken) => {
+  return new Promise((resolve, reject) => {
+    const options = {
+      hostname: "api.amazon.com",
+      path: "/user/profile",
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${thisToken}`,
+      },
+    };
+
+    const req = myRequest
+      .request(options, (res) => {
+        let data = "";
+
+        console.log("Status Code:", res.statusCode);
+
+        res.on("data", (chunk) => {
+          data += chunk;
+        });
+
+        res.on("end", () => {
+          console.log("User Profile: ", JSON.parse(data));
+          return resolve(JSON.parse(data));
+        });
+      })
+      .on("error", (err) => {
+        console.log("Error: ", err.message);
+        return reject(err.message);
+      });
+    req.end();
+  });
+};
 const sendChangeReportEvent = async (thisToken) => {
   return new Promise((resolve, reject) => {
     const data = JSON.stringify({
@@ -160,7 +194,8 @@ const handleStateReport = async (request, context) => {
     "Alexa.PowerController ",
     JSON.stringify(response)
   );
-  await sendChangeReportEvent(response.event.scope.token);
+  //await sendChangeReportEvent(response.event.scope.token);
+  await getUserProfileInfo(response.event.scope.token);
   context.succeed(response);
 };
 

@@ -1,0 +1,45 @@
+<div>Login With Amazon</div>
+<div id="amazon-root"> Amazon Root</div>
+<a href id="LoginWithAmazon">
+    <img border="0" alt="Login with Amazon"
+        src="https://images-na.ssl-images-amazon.com/images/G/01/lwa/btnLWA_gold_156x32.png"
+        width="156" height="32" />
+ </a>
+ <script type="text/javascript">
+
+    window.onAmazonLoginReady = function() {
+      amazon.Login.setClientId('amzn1.application-oa2-client.8e364cf34cb649508a1746e26a4429d4');
+    };
+    function createATag() {
+      let getRoot = document.getElementById('amazon-root')
+      let a = document.createElement('script'); 
+      a.type = 'text/javascript';
+      a.async = true;
+      a.id = 'amazon-login-sdk';
+      a.src = 'https://assets.loginwithamazon.com/sdk/na/login1.js';
+      getRoot.appendChild(a);
+      
+      document.getElementById('LoginWithAmazon').onclick = function() {
+        options = {}
+        options.scope = 'profile';
+        options.scope_data = {
+            'profile' : {'essential': false}
+        };
+        /* amazon.Login.authorize(options,
+            'https://www.example.com/handle_login.php'); */
+            amazon.Login.authorize(options, response => {
+                if ( response.error ) {
+                alert('oauth error ' + response.error);
+                return;
+                }
+                alert(response)
+                });
+        return false;
+    };
+    }
+//     https://na.account.amazon.com/sdk/2022-10-12-42hn7dhj/topic.html
+// %3Furi%3Dhttp%253A%252F%252F127.0.0.1%253A5500%252Flambda%252F
+// index.html%26proxy%3Damazon-proxy-https-na_account_amazon_com
+// %26topic%3DvLvKKw3Aj9zXGh0J%26version%3D3
+    createATag()
+</script>
