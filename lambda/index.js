@@ -195,7 +195,7 @@ const handleStateReport = async (request, context) => {
     JSON.stringify(response)
   );
   //await sendChangeReportEvent(response.event.scope.token);
-  await getUserProfileInfo(response.event.scope.token);
+  await getUserProfileInfo(requestToken);
   context.succeed(response);
 };
 
