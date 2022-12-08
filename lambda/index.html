@@ -1,5 +1,8 @@
 <!DOCTYPE html>
+<head>
+</head>
 <body>
+   
 <div>Login With Amazon</div>
 <div id="amazon-root"> Amazon Root</div>
 <a href id="LoginWithAmazon">
@@ -8,7 +11,7 @@
         width="156" height="32" />
  </a>
 
- <script type="text/javascript">
+ <script type="module">
 
     window.onAmazonLoginReady = function() {
       amazon.Login.
@@ -17,8 +20,18 @@
       ('amzn1.application-oa2-client.8e364cf34cb649508a1746e26a4429d4');
       // amazon.Login.setSiteDomain(window.location.hostname);
     };
-    const getProfileInfoFunc = () => {
-    var access_token = 'Atza|IwEBIPOX9q1GH0g4QTkSASnVkMsapmz26_KbsQXjCY75NuN1AL-V-j0zlEbqm9ReaMP4AtZ3yVhaRaAI6Rwb2QxY5HNuiJuxIc4F3Trrcrf5Cn6cjRHC_L1cB_JH8BcvokTAg3Bw9eWpjPfGmYthkj-SF95IxFVhWNEjR2RAxfIIL9rOChKMVx51PyTZsysXZULKhAwGhsKe5QcMlTraTQxZebKlIbfXaLe2scSltDDfmsT8YB5kSBjKyf7_rssmrESmuzZmojg5lI9ghz7pY29fI2QCSxmmQMl7-Z0_vT_kwKzMnz41FzhBn5jnZgO5pDw_L23T0eO6NYczMEXpDRp0z7m4NV9XMTH6Zk4WHYNt7Uu7ICKho2ZIVy9mZr4Fs1QeKFs';
+    let userInfo = {}
+    let infoExists = false
+    let getRoot = document.getElementById('amazon-root')
+    let a = document.createElement('script'); 
+    a.type = 'text/javascript';
+    a.async = true;
+    a.id = 'amazon-login-sdk';
+    a.src = 'https://assets.loginwithamazon.com/sdk/na/login1.js';
+    getRoot.appendChild(a);
+
+    let thisObject = document.getElementById('LoginWithAmazon')
+    const getProfileInfoFunc = (access_token) => {
 
     amazon.Login.retrieveProfile(access_token, function(response) {
    
@@ -34,64 +47,113 @@
     
    const callThis = (a)  => alert(a );
     
-   const createATag = () =>{
-        
-      let getRoot = document.getElementById('amazon-root')
-      let a = document.createElement('script'); 
-      a.type = 'text/javascript';
-      a.async = true;
-      a.id = 'amazon-login-sdk';
-      a.src = 'https://assets.loginwithamazon.com/sdk/na/login1.js';
-      getRoot.appendChild(a);
-      
-      let thisObject = document.getElementById('LoginWithAmazon')
+   const createATag = () => {
         thisObject.addEventListener("click", () => {  
-        let access_token = 'Atza|IwEBIPOX9q1GH0g4QTkSASnVkMsapmz26_KbsQXjCY75NuN1AL-V-j0zlEbqm9ReaMP4AtZ3yVhaRaAI6Rwb2QxY5HNuiJuxIc4F3Trrcrf5Cn6cjRHC_L1cB_JH8BcvokTAg3Bw9eWpjPfGmYthkj-SF95IxFVhWNEjR2RAxfIIL9rOChKMVx51PyTZsysXZULKhAwGhsKe5QcMlTraTQxZebKlIbfXaLe2scSltDDfmsT8YB5kSBjKyf7_rssmrESmuzZmojg5lI9ghz7pY29fI2QCSxmmQMl7-Z0_vT_kwKzMnz41FzhBn5jnZgO5pDw_L23T0eO6NYczMEXpDRp0z7m4NV9XMTH6Zk4WHYNt7Uu7ICKho2ZIVy9mZr4Fs1QeKFs';
+        try {
 
-       try {
-
-        options = {}
-        let urlCode = false;
-        options.scope = 'profile:user_id';
-        options.popup = false
-        options.response_type = 'code';
-        next = 'http://127.0.0.1:5500/lambda/index.html'
-        //'https://skills-store.amazon.com/api/skill/link/M2FC9FL6SREJQF'
-       //createCallBack(callThis)
-        let getResult = amazon.Login.authorize(options, next)
-        alert(JSON.stringify(getResult)) 
-        } catch (error) {
-            alert(error)
-        }
+            let options = {}
+            let urlCode = false;
+            options.scope = 'profile:user_id';
+            options.popup = false
+            options.response_type = 'code';
+            //options.pkce = true;
+            let next = 
+            //'http://127.0.0.1:5500/lambda/index.html'
+            'https://skills-store.amazon.com/api/skill/link/M2FC9FL6SREJQF'
+            //createCallBack(callThis)
+            let getResult = amazon.Login.authorize(options, next) //nested func
+            alert(JSON.stringify(getResult)) 
+            } catch (error) {
+                alert(error)
+            }
       })
     }
-   const getUrlCode = () => {
-            let findCode = new URLSearchParams(window.location.search).get('code')
-            alert(findCode)
-            if(findCode !== null){
-                localStorage.setItem('appcode',findCode)
+   const generateurlCode = () => {
+    const aws_scope = "profile:user_id"
+    const aws_cl_id = "amzn1.application-oa2-client.8e364cf34cb649508a1746e26a4429d4"
+    const aws_res_type = "device_code"
+    let thisBody =  JSON.stringify({
+    "response_type": "device_code",
+    "client_id": "amzn1.application-oa2-client.8e364cf34cb649508a1746e26a4429d4",
+    "scope": "profile:user_id"
+        })
+    fetch(`https://api.amazon.com/auth/o2/create/codepair`, {
+    method: 'POST',
+    headers: {
+        Accept: '*',
+        'Content-Type': 'application/json'
+    },
+    body: thisBody
+    })
+    .then(res => res.json())
+    .then(result => {
+        alert(JSON.stringify(result))
+
+        if(JSON.stringify(result.device_code) !== null && JSON.stringify(result.user_device) !== null){
+            userInfo.user_device = JSON.stringify(result.device_code)
+            userInfo.user_code = JSON.stringify(result.user_code)
+            localStorage.setItem('userInfo', JSON.stringify(userInfo));
+            let retrievedObject = localStorage.getItem('userInfo');
+
+            if(retrievedObject !== null){
+                infoExists = true
+                
+                let getDevice =  JSON.parse(retrievedObject)
+
+                if(getDevice.user_code !== undefined && getDevice.user_device !== undefined){
+
+                                alert(`register device using this code ${getDevice.user_device}`)
+                                window.location.replace("https://www.amazon.com/a/code")
+                                // do promise
+                                return infoExists
+                }
             }
         }
-   const useCodeUrl = () => {
-    let thisCode = localStorage.getItem('appcode')
-    if(thisCode !== null){
-        alert(`thisCode ${thisCode}`)
-        generateAccessToken(thisCode)
+    })
+    .catch(err => alert(err))  
+   } 
+   const generateAccessToken = () => {
+
+    let retrievedObject = localStorage.getItem('userInfo');
+
+    if(retrievedObject !== null){
+
+       let getDevice =  JSON.parse(retrievedObject)
+
+      if(getDevice.user_code !== undefined && getDevice.user_code !== undefined){
+
+        const aws_grant_type = "device_code"
+        alert(getDevice.user_code + getDevice.user_device)  
+        let thisBody = JSON.stringify({
+            "user_code" : `${getDevice.user_code}`,
+            "device_code" : `${getDevice.user_device}`,
+            "grant_type" : aws_grant_type
+        })
+
+        fetch(`https://api.amazon.com/auth/o2/token`, {
+        method: 'POST',
+        //cache: 'no-cache',
+        //mode: "no-cors",
+        headers: {
+            Accept: '*',
+            'Content-Type': 'application/json'
+            //application/x-www-form-urlencoded
+        },
+        body: thisBody
+        })
+        .then(res => res.json())
+        .then(result => {
+            alert(JSON.stringify(result))
+            //remove code from localstorage
+            //setItem accessToken
+        })
+        .catch(err => alert(err))
+      }
     }
    }
-   const generateAccessToken = (thisCode) => {
-        amazon.Login.retrieveToken(thisCode, function(response) {
-            if ( response.success ) {
-                alert(`Response, ${response.success}` );
-                localStorage.removeItem('appcode')
-                localStorage.setItem('appaccesstoken',response.access_token)
-            }
-            else alert("error");
-        }) 
-   }
-        getUrlCode()  
-        useCodeUrl()      
-        createATag() 
+        //generateurlCode()
+        //after user registered a device
+        //generateAccessToken()
 
 </script>
 </body>
