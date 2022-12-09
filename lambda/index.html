@@ -22,6 +22,7 @@
     };
     let userInfo = {}
     let infoExists = false
+    let countPage = 0
     let getRoot = document.getElementById('amazon-root')
     let a = document.createElement('script'); 
     a.type = 'text/javascript';
@@ -48,8 +49,9 @@
    const callThis = (a)  => alert(a );
     
    const createATag = () => {
-        thisObject.addEventListener("click", () => {  
-        try {
+        thisObject.addEventListener("click", generateUrlCode())
+
+      /*   try {
 
             let options = {}
             let urlCode = false;
@@ -58,17 +60,18 @@
             options.response_type = 'code';
             //options.pkce = true;
             let next = 
-            //'http://127.0.0.1:5500/lambda/index.html'
-            'https://skills-store.amazon.com/api/skill/link/M2FC9FL6SREJQF'
+             'http://127.0.0.1:5500/index.html'
+            //'https://skills-store.amazon.com/api/skill/link/M2FC9FL6SREJQF'
             //createCallBack(callThis)
-            let getResult = amazon.Login.authorize(options, next) //nested func
-            alert(JSON.stringify(getResult)) 
+           
+            let getResult = amazon.Login.authorize(options, next) 
+            alert(JSON.stringify(getResult))           
             } catch (error) {
                 alert(error)
-            }
-      })
+            } */
+
     }
-   const generateurlCode = () => {
+   const generateUrlCode = () => {
     const aws_scope = "profile:user_id"
     const aws_cl_id = "amzn1.application-oa2-client.8e364cf34cb649508a1746e26a4429d4"
     const aws_res_type = "device_code"
@@ -96,16 +99,15 @@
             let retrievedObject = localStorage.getItem('userInfo');
 
             if(retrievedObject !== null){
-                infoExists = true
-                
                 let getDevice =  JSON.parse(retrievedObject)
 
                 if(getDevice.user_code !== undefined && getDevice.user_device !== undefined){
 
-                                alert(`register device using this code ${getDevice.user_device}`)
-                                window.location.replace("https://www.amazon.com/a/code")
-                                // do promise
-                                return infoExists
+                    alert(`register device using this code ${getDevice.user_code}`)
+                    // unblock the popup windows manually
+                    let thisUrl = "https://www.amazon.com/a/code"
+                    let newTab = window.open();
+                    newTab.location.href = thisUrl;
                 }
             }
         }
@@ -116,11 +118,11 @@
 
     let retrievedObject = localStorage.getItem('userInfo');
 
-    if(retrievedObject !== null){
+    if(retrievedObject != null){
 
        let getDevice =  JSON.parse(retrievedObject)
 
-      if(getDevice.user_code !== undefined && getDevice.user_code !== undefined){
+      if(getDevice.user_code != undefined && getDevice.user_code != undefined){
 
         const aws_grant_type = "device_code"
         alert(getDevice.user_code + getDevice.user_device)  
@@ -151,10 +153,29 @@
       }
     }
    }
-        //generateurlCode()
-        //after user registered a device
-        //generateAccessToken()
+   const addUrlParameter = (nameOne, valueOne, nameTwo, ValueTwo) => {
+        var searchParams = new URLSearchParams(window.location.search)
+        searchParams.set(nameOne, valueOne)
+        searchParams.set(nameTwo, ValueTwo)
+        window.location.search = searchParams.toString()
+   }
+   const findCodeFromUrl = () => {
+    let getCodeurl = new URLSearchParams(window.location.search).get('code')
+    if(getCodeurl !== null){
+        localStorage.setItem('codeUrl', getCodeurl)
+    }
+   } 
+  
+   if(!infoExists){
+   let retrievedObject = localStorage.getItem('userInfo');
 
+   if(retrievedObject != null){
+        alert(retrievedObject)
+        infoExists = true
+        //generateAccessToken()
+      } 
+    }
+    
 </script>
 </body>
 </html>
