@@ -15,10 +15,7 @@
 
     window.onAmazonLoginReady = function() {
       amazon.Login.
-      setClientId
-      //('amzn1.application-oa2-client.45e216f2fc214eec95a17fd39a95146c')
-      ('amzn1.application-oa2-client.8e364cf34cb649508a1746e26a4429d4');
-      // amazon.Login.setSiteDomain(window.location.hostname);
+      setClientId('amzn1.application-oa2-client.8e364cf34cb649508a1746e26a4429d4')
     };
     let userInfo = {}
     let infoExists = false
@@ -28,7 +25,7 @@
     a.type = 'text/javascript';
     a.async = true;
     a.id = 'amazon-login-sdk';
-    a.src = 'https://assets.loginwithamazon.com/sdk/na/login1.js';
+    a.src = 'https://assets.loginwithamazon.com/sdk/na/login1.js'
     getRoot.appendChild(a);
 
     let thisObject = document.getElementById('LoginWithAmazon')
@@ -37,22 +34,19 @@
     amazon.Login.retrieveProfile(access_token, function(response) {
    
     if ( response.success ) {
-        alert('Hello, ' + JSON.stringify(response.profile));
+        alert('Hello, ' + JSON.stringify(response.profile))
     }
     else {
-        alert('Oh no! An error happened: ' + response.error);
+        alert('Oh no! An error happened: ' + response.error)
     }
     });
    }
-   const createCallBack = (callback) => callback('called');
+   const createCallBack = (callback) => callback('called')
     
    const callThis = (a)  => alert(a );
     
    const createATag = () => {
-        thisObject.addEventListener("click", generateUrlCode())
-
       /*   try {
-
             let options = {}
             let urlCode = false;
             options.scope = 'profile:user_id';
@@ -67,9 +61,8 @@
             let getResult = amazon.Login.authorize(options, next) 
             alert(JSON.stringify(getResult))           
             } catch (error) {
-                alert(error)
+                console.log(error)
             } */
-
     }
    const generateUrlCode = () => {
     const aws_scope = "profile:user_id"
@@ -95,8 +88,8 @@
         if(JSON.stringify(result.device_code) !== null && JSON.stringify(result.user_device) !== null){
             userInfo.user_device = JSON.stringify(result.device_code)
             userInfo.user_code = JSON.stringify(result.user_code)
-            localStorage.setItem('userInfo', JSON.stringify(userInfo));
-            let retrievedObject = localStorage.getItem('userInfo');
+            localStorage.setItem('userInfo', JSON.stringify(userInfo))
+            let retrievedObject = localStorage.getItem('userInfo')
 
             if(retrievedObject !== null){
                 let getDevice =  JSON.parse(retrievedObject)
@@ -106,8 +99,7 @@
                     alert(`register device using this code ${getDevice.user_code}`)
                     // unblock the popup windows manually
                     let thisUrl = "https://www.amazon.com/a/code"
-                    let newTab = window.open();
-                    newTab.location.href = thisUrl;
+                    let newTab = window.open(thisUrl,"_target")
                 }
             }
         }
@@ -116,40 +108,47 @@
    } 
    const generateAccessToken = () => {
 
-    let retrievedObject = localStorage.getItem('userInfo');
+    let retrievedObject = localStorage.getItem('userInfo')
 
     if(retrievedObject != null){
 
        let getDevice =  JSON.parse(retrievedObject)
 
-      if(getDevice.user_code != undefined && getDevice.user_code != undefined){
+      if(getDevice.user_code != undefined && getDevice.user_device != undefined){
 
-        const aws_grant_type = "device_code"
-        alert(getDevice.user_code + getDevice.user_device)  
+        const aws_grant_type = "device_code"      
+        let mdfCode = getDevice.user_code
+        let mdfUser = getDevice.user_device
+
+        let mdf2Code = mdfCode.slice(1, -1).toString()
+        let mdf2User = mdfUser.slice(1, -1).toString()
+
+        alert(mdf2User) 
+
         let thisBody = JSON.stringify({
-            "user_code" : `${getDevice.user_code}`,
-            "device_code" : `${getDevice.user_device}`,
+            "user_code" : `${mdf2Code}`,
+            "device_code" : `${mdf2User}`,
             "grant_type" : aws_grant_type
         })
 
         fetch(`https://api.amazon.com/auth/o2/token`, {
         method: 'POST',
-        //cache: 'no-cache',
-        //mode: "no-cors",
         headers: {
             Accept: '*',
             'Content-Type': 'application/json'
-            //application/x-www-form-urlencoded
         },
         body: thisBody
         })
         .then(res => res.json())
         .then(result => {
-            alert(JSON.stringify(result))
-            //remove code from localstorage
-            //setItem accessToken
+            console.log(JSON.stringify(result))
+            alert(result.error_description)
+            if(result.error_description == null){
+                localStorage.removeItem("userInfo")
+                localStorage.setItem("userAToken",JSON.stringify(result))
+            }
         })
-        .catch(err => alert(err))
+        .catch(err => console.log(err)) 
       }
     }
    }
@@ -165,17 +164,16 @@
         localStorage.setItem('codeUrl', getCodeurl)
     }
    } 
-  
-   if(!infoExists){
-   let retrievedObject = localStorage.getItem('userInfo');
-
-   if(retrievedObject != null){
-        alert(retrievedObject)
-        infoExists = true
-        //generateAccessToken()
+   thisObject.addEventListener("click",function(event){
+       event.preventDefault()
+       generateUrlCode()
+   })
+   let retrievedCode = localStorage.getItem('userInfo')
+   let retrievedAToken = localStorage.getItem('userAToken')
+   if(retrievedCode != null && retrievedAToken == null){
+       // get pending error until registering the device-code
+        generateAccessToken()
       } 
-    }
-    
 </script>
 </body>
 </html>
