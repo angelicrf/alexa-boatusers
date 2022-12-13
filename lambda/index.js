@@ -1,6 +1,7 @@
 const AWS = require("aws-sdk");
 const lambda = new AWS.Lambda();
 const myRequest = require("https");
+let thisState = "ON";
 
 const callChildLambdaFunc = async (thisName) => {
   const params = {
@@ -79,7 +80,16 @@ const sendChangeReportEvent = async (thisToken) => {
                 name: "powerState",
                 value: "OFF",
                 timeOfSample: "2022-11-20T16:20:50Z",
-                uncertaintyInMilliseconds: 60000,
+                uncertaintyInMilliseconds: 500,
+              },
+              {
+                namespace: "Alexa.EndpointHealth",
+                name: "connectivity",
+                value: {
+                  value: "OK",
+                },
+                timeOfSample: "2021-06-03T16:00:50Z ",
+                uncertaintyInMilliseconds: 0,
               },
             ],
           },
@@ -146,7 +156,7 @@ const handleStateReport = async (request, context) => {
       {
         namespace: "Alexa.PowerController",
         name: "powerState",
-        value: "ON",
+        value: thisState,
         timeOfSample: "2022-11-20T16:20:50.52Z", //retrieve from result.
         uncertaintyInMilliseconds: 50,
       },
@@ -357,37 +367,31 @@ const log = (message, message1, message2) =>
   console.log(message + message1 + message2);
 
 const handlePowerControl = (request, context) => {
-  // get device ID passed in during discovery
   var requestMethod = request.directive.header.name;
   var responseHeader = request.directive.header;
   responseHeader.namespace = "Alexa";
-  //responseHeader.payloadVersion = "3";
   responseHeader.name = "Response";
-  //ChangeReport
   responseHeader.messageId = responseHeader.messageId + "-R";
   responseHeader.correlationToken = responseHeader.messageId + "-R";
-  // get user token pass in request
   var requestToken = request.directive.endpoint.scope.token;
 
-  var powerResult;
+  //var powerResult;
+  thisState = "";
 
   if (requestMethod === "TurnOn") {
-    // Make the call to your device cloud for control
-    // powerResult = stubControlFunctionToYourCloud(endpointId, token, request);
-    powerResult = "ON";
+    //powerResult = "ON";
+    thisState = "ON";
   } else if (requestMethod === "TurnOff") {
-    // Make the call to your device cloud for control and check for success
-    // powerResult = stubControlFunctionToYourCloud(endpointId, token, request);
-    powerResult = "OFF";
+    //powerResult = "OFF";
+    thisState = "OFF";
   }
   // Return the updated powerState.  Always include EndpointHealth in your Alexa.Response
-  // Datetime format for timeOfSample is ISO 8601, `YYYY-MM-DDThh:mm:ssZ`.
   var contextResult = {
     properties: [
       {
         namespace: "Alexa.PowerController",
         name: "powerState",
-        value: powerResult,
+        value: thisState,
         timeOfSample: "2022-11-20T16:20:50.52Z", //retrieve from result.
         uncertaintyInMilliseconds: 500,
       },
@@ -427,15 +431,18 @@ exports.handler = (request, context) => {
   ) {
     log("DEBUG:", "Discover request", JSON.stringify(request));
     handleDiscovery(request, context, "");
-  } else if (request.directive.header.namespace === "Alexa") {
-    if (request.directive.header.name === "ChangeReport") {
-      console.log(JSON.stringify(request));
-      handleChangeReport(request, context);
-    }
-    if (request.directive.header.name === "ReportState") {
-      //console.log(JSON.stringify(request));
-      handleStateReport(request, context);
-    }
+  } else if (
+    request.directive.header.namespace === "Alexa" &&
+    request.directive.header.name === "ChangeReport"
+  ) {
+    console.log(JSON.stringify(request));
+    handleChangeReport(request, context);
+  } else if (
+    request.directive.header.namespace === "Alexa" &&
+    request.directive.header.name === "ReportState"
+  ) {
+    //console.log(JSON.stringify(request));
+    handleStateReport(request, context);
   } else if (request.directive.header.namespace === "Alexa.PowerController") {
     if (
       request.directive.header.name === "TurnOn" ||

@@ -30,7 +30,7 @@
 
     let thisObject = document.getElementById('LoginWithAmazon')
     const getProfileInfoFunc = (access_token) => {
-
+    // "user_id": "amzn1.account.AF4VTXJLRLAEYMCMNVC2O4XMGCKQ"
     amazon.Login.retrieveProfile(access_token, function(response) {
    
     if ( response.success ) {
