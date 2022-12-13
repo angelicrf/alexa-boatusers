@@ -6,19 +6,22 @@
           "name": "alexa::devices:all:notifications:write"
         },
         {
-            "name": "alexa::devices:all:address:full:read"
+          "name": "alexa::devices:all:address:full:read"
         },
         {
-        "name": "alexa::ask:skills:readwrite"
+          "name": "alexa::ask:skills:readwrite"
         },
         {
-        "name": "alexa::ask:models:readwrite"
+          "name": "alexa::ask:models:readwrite"
         },
         {
-        "name": "alexa::ask:catalogs:readwrite"
+          "name": "alexa::ask:catalogs:readwrite"
         },
         {
-        "name": "alexa::alerts:reminders:skill:readwrite"
+          "name": "alexa::ask:subscriptions"
+        },
+        {
+          "name": "alexa::alerts:reminders:skill:readwrite"
         }
       ],
       "publishingInformation": {

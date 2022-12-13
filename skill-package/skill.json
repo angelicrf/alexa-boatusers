@@ -1,5 +1,28 @@
 {
   "manifest": {
+    "permissions": [
+      {
+        "name": "alexa::devices:all:notifications:write"
+      },
+      {
+        "name": "alexa::devices:all:address:full:read"
+      },
+      {
+        "name": "alexa::ask:skills:readwrite"
+      },
+      {
+        "name": "alexa::ask:models:readwrite"
+      },
+      {
+        "name": "alexa::ask:catalogs:readwrite"
+      },
+      {
+        "name": "alexa::ask:subscriptions"
+      },
+      {
+        "name": "alexa::alerts:reminders:skill:readwrite"
+      }
+    ],
     "apis": {
       "custom": {
         "endpoint": {
@@ -28,6 +51,31 @@
       "locales": {
         "en-US": {
           "name": "bualexaxaskillsnodeskills"
+        }
+      }
+    },
+    "events": {
+      "publications": [
+        {
+          "eventName": "AMAZON.OrderStatus.Updated"
+        },
+        {
+          "eventName": "AMAZON.MessageAlert.Activated"
+        }
+      ],
+      "endpoint": {
+        "uri": "arn:aws:lambda:us-east-1:0000000000000:function:sampleSkill"
+      },
+      "subscriptions": [
+        {
+          "eventName": "SKILL_PROACTIVE_SUBSCRIPTION_CHANGED"
+        }
+      ],
+      "regions": {
+        "NA": {
+          "endpoint": {
+            "uri": "arn:aws:lambda:us-east-1:0000000000000:function:sampleSkill"
+          }
         }
       }
     }
