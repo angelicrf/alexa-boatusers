@@ -1,0 +1,35 @@
+{
+  "manifest": {
+    "apis": {
+      "custom": {
+        "endpoint": {
+          "uri": "arn:aws:lambda:us-east-1:964129824268:function:07b40eb9-7173-471f-8106-de2b6b7c3ef5:Release_0"
+        },
+        "regions": {
+          "EU": {
+            "endpoint": {
+              "uri": "arn:aws:lambda:eu-west-1:964129824268:function:07b40eb9-7173-471f-8106-de2b6b7c3ef5:Release_0"
+            }
+          },
+          "NA": {
+            "endpoint": {
+              "uri": "arn:aws:lambda:us-east-1:964129824268:function:07b40eb9-7173-471f-8106-de2b6b7c3ef5:Release_0"
+            }
+          },
+          "FE": {
+            "endpoint": {
+              "uri": "arn:aws:lambda:us-west-2:964129824268:function:07b40eb9-7173-471f-8106-de2b6b7c3ef5:Release_0"
+            }
+          }
+        }
+      }
+    },
+    "publishingInformation": {
+      "locales": {
+        "en-US": {
+          "name": "bualexaxaskillsnodeskills"
+        }
+      }
+    }
+  }
+}

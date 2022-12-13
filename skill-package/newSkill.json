@@ -1,0 +1,104 @@
+{
+    "manifest": {
+      "manifestVersion": "1.0",
+      "permissions": [
+        {
+          "name": "alexa::devices:all:notifications:write"
+        },
+        {
+            "name": "alexa::devices:all:address:full:read"
+        },
+        {
+        "name": "alexa::ask:skills:readwrite"
+        },
+        {
+        "name": "alexa::ask:models:readwrite"
+        },
+        {
+        "name": "alexa::ask:catalogs:readwrite"
+        },
+        {
+        "name": "alexa::alerts:reminders:skill:readwrite"
+        }
+      ],
+      "publishingInformation": {
+        "locales": {
+          "en-US": {
+            "name": "Sample skill name.",
+            "summary": "This is a sample Alexa skill.",
+            "description": "This skill has basic and advanced smart devices control features.",
+            "smallIconUri": "https://smallUri.com",
+            "largeIconUri": "https://largeUri.com",
+            "examplePhrases": [
+              "Alexa, open sample skill.",
+              "Alexa, blink kitchen lights."
+            ],
+            "keywords": [
+              "Smart Home",
+              "Lights",
+              "Smart Devices"
+            ]
+          }
+        },
+        "distributionCountries": [
+          "US",
+          "GB"
+        ],
+        "isAvailableWorldwide": false,
+        "testingInstructions": "1) Say 'Alexa, turn on sample lights'",
+        "category": "SMART_HOME"
+      },
+      "privacyAndCompliance": {
+        "allowsPurchases": false,
+        "usesPersonalInfo": false,
+        "isChildDirected": false,
+        "isExportCompliant": true,
+        "containsAds": false,
+        "locales": {
+          "en-US": {
+            "privacyPolicyUrl": "http://www.myprivacypolicy.sampleskill.com",
+            "termsOfUseUrl": "http://www.termsofuse.sampleskill.com"
+          }
+        }
+      },
+      "apis": {
+        "smartHome": {
+          "endpoint": {
+            "uri": "arn:aws:lambda:us-east-1:040623927470:function:sampleSkill"
+          },
+          "regions": {
+            "NA": {
+              "endpoint": {
+                "uri": "arn:aws:lambda:us-west-2:010623927470:function:sampleSkillWest"
+              }
+            }
+          }
+        }
+      },
+      "events": {
+        "publications": [
+          {
+            "eventName": "AMAZON.OrderStatus.Updated"
+          },
+          {
+            "eventName": "AMAZON.MessageAlert.Activated"
+          }
+        ],
+        "endpoint": {
+          "uri": "arn:aws:lambda:us-east-1:0000000000000:function:sampleSkill"
+        },
+        "subscriptions": [
+          {
+            "eventName": "SKILL_PROACTIVE_SUBSCRIPTION_CHANGED"
+          }
+        ],
+        "regions": {
+          "NA": {
+            "endpoint": {
+              "uri": "arn:aws:lambda:us-east-1:0000000000000:function:sampleSkill"
+            }
+          }
+        }
+    }
+  }
+}
