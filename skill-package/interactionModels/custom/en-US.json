@@ -1,7 +1,7 @@
 {
   "interactionModel": {
     "languageModel": {
-      "invocationName": "bualexaxaskillsnodeskills",
+      "invocationName": "BUSmartSkills",
       "intents": [
         {
           "name": "AMAZON.CancelIntent",
