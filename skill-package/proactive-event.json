@@ -1,31 +1,24 @@
-{"permissions": [
-  {
-    "name": "alexa::devices:all:notifications:write"
-  }
-],
-"events": {
-  "publications": [
-    {
-      "eventName": "AMAZON.OrderStatus.Updated"
-    },
-    {
-      "eventName": "AMAZON.MessageAlert.Activated"
-    }
-  ],
-  "endpoint": {
-    "uri": "arn:aws:lambda:us-east-1:322658870421:function:busers-smart-boat-skill"
-  },
-  "subscriptions": [
-    {
-      "eventName": "SKILL_PROACTIVE_SUBSCRIPTION_CHANGED"
-    }
-  ],
-  "regions": {
-    "NA": {
-      "endpoint": {
-        "uri": "arn:aws:lambda:us-east-1:322658870421:function:busers-smart-boat-skill"
+{
+  "timestamp": "2022-12-15T15:10:01.00Z",
+  "referenceId": "123412341234",
+  "expiryTime": "2022-12-16T15:10:01.00Z",
+  "event": {
+    "name": "AMAZON.WeatherAlert.Activated",
+    "payload" :{
+      "weatherAlert": {
+        "source": "localizedattribute:source",
+        "alertType": "TORNADO"
       }
     }
+},
+  "localizedAttributes": [
+    {
+      "locale": "en-US",
+      "source": "Example Weather Corp"
+    }
+  ],
+  "relevantAudience": {
+      "type": "Multicast",
+      "payload": {}
   }
-}
 }
