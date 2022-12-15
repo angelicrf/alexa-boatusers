@@ -1,24 +1,25 @@
 {
-  "timestamp": "2022-12-15T15:10:01.00Z",
-  "referenceId": "123412341234",
-  "expiryTime": "2022-12-16T15:10:01.00Z",
+  "timestamp": "data",
+  "referenceId": "data",
+  "expiryTime": "data",
   "event": {
-    "name": "AMAZON.WeatherAlert.Activated",
-    "payload" :{
-      "weatherAlert": {
-        "source": "localizedattribute:source",
-        "alertType": "TORNADO"
+    "name": "AMAZON.MessageAlert.Activated",
+    "payload": {
+      "state": {
+        "status": "UNREAD",
+        "freshness": "NEW"
+      },
+      "messageGroup": {
+        "creator": {
+          "name": "Angelique"
+        },
+        "count": 2
       }
     }
-},
-  "localizedAttributes": [
-    {
-      "locale": "en-US",
-      "source": "Example Weather Corp"
-    }
-  ],
-  "relevantAudience": {
-      "type": "Multicast",
-      "payload": {}
+  },
+ "relevantAudience": {
+    "type": "Multicast",
+    "payload": {}
   }
 }
+
