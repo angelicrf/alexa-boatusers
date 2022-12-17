@@ -40,7 +40,7 @@
                 "eventName": "AMAZON.MessageAlert.Activated"
               },
               {
-                "eventName": "Alexa.ChangeReport"
+                "eventName": "AMAZON.WeatherAlert.Activated"
               }
             ],
             "endpoint": {

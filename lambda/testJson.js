@@ -1,6 +1,7 @@
 const { v4: uuidv4 } = require("uuid");
 const myRequest = require("https");
 let getData = require("../skill-package/proactive-event.json");
+const weatherData = require("../skill-package/weatherPrEvent.json");
 
 const getProactiveAccessToken = () => {
   let data = JSON.stringify({
@@ -46,19 +47,19 @@ const getProactiveAccessToken = () => {
     req.end();
   });
 };
-const modifyEvent = () => {
+const modifyEvent = (thisObject) => {
   return new Promise((resolve, reject) => {
-    getData.timestamp = new Date().toISOString();
+    thisObject.timestamp = new Date().toISOString();
 
     const today = new Date();
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
 
-    getData.expiryTime = tomorrow.toISOString();
-    getData.referenceId = uuidv4();
+    thisObject.expiryTime = tomorrow.toISOString();
+    thisObject.referenceId = uuidv4();
 
-    if (getData.referenceId !== "data") {
-      resolve(getData);
+    if (thisObject.referenceId !== "data") {
+      resolve(thisObject);
     } else reject("there is an error");
   });
 };
@@ -66,7 +67,7 @@ const displayProacvtiveENotification = async (thisAccessToken, receiveData) => {
   console.log(
     `BoatUsers Proactive-Event Data: ${JSON.stringify(
       receiveData
-    )} and Payload Status:  ${receiveData.event.payload.state.status} `
+    )} and Payload :  ${JSON.stringify(receiveData.event.payload)}`
   );
   return new Promise((resolve, reject) => {
     try {
@@ -113,7 +114,9 @@ const displayProacvtiveENotification = async (thisAccessToken, receiveData) => {
 };
 const stepsGetATokenSendNotification = async () => {
   let rcAToken = await getProactiveAccessToken();
-  let receiveData = await modifyEvent();
-  await displayProacvtiveENotification(rcAToken, receiveData);
+  let notificationData = await modifyEvent(getData);
+  await displayProacvtiveENotification(rcAToken, notificationData);
+  let wData = await modifyEvent(weatherData);
+  await displayProacvtiveENotification(rcAToken, wData);
 };
 stepsGetATokenSendNotification();

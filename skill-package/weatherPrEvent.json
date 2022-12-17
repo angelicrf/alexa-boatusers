@@ -1,0 +1,24 @@
+{
+  "timestamp": "data",
+  "referenceId": "data",
+  "expiryTime": "data",
+  "event": {
+      "name": "AMAZON.WeatherAlert.Activated",
+      "payload": {
+              "weatherAlert": {
+              "source": "localizedattribute:source",
+              "alertType": "TORNADO"
+          }
+      }
+  },
+  "localizedAttributes": [
+      {
+          "locale": "en-US",
+          "source": "BU Weather Corp"
+      }
+  ],
+  "relevantAudience": {
+      "type": "Multicast",
+      "payload": {}
+  }
+  }
