@@ -20,28 +20,31 @@ const getProactiveAccessToken = () => {
     },
   };
 
-  const req = myRequest
-    .request(options, (res) => {
-      let data = "";
+  return new Promise((resolve, reject) => {
+    const req = myRequest
+      .request(options, (res) => {
+        let data = "";
 
-      console.log("Status Code:", res.statusCode);
+        console.log("Status Code:", res.statusCode);
 
-      res.on("data", (chunk) => {
-        data += chunk;
+        res.on("data", (chunk) => {
+          data += chunk;
+        });
+
+        res.on("end", () => {
+          let getAToken = JSON.parse(data).access_token;
+          console.log("Access Token ", getAToken);
+          resolve(getAToken);
+        });
+      })
+      .on("error", (err) => {
+        console.log("Error: ", err.message);
+        reject(err.message);
       });
 
-      res.on("end", () => {
-        let getAToken = JSON.parse(data).access_token;
-        console.log("Access Token ", getAToken);
-        displayProacvtiveENotification(getAToken);
-      });
-    })
-    .on("error", (err) => {
-      console.log("Error: ", err.message);
-    });
-
-  req.write(data);
-  req.end();
+    req.write(data);
+    req.end();
+  });
 };
 const modifyEvent = () => {
   return new Promise((resolve, reject) => {
@@ -59,49 +62,58 @@ const modifyEvent = () => {
     } else reject("there is an error");
   });
 };
-const displayProacvtiveENotification = async (thisAccessToken) => {
-  let receiveData = await modifyEvent();
+const displayProacvtiveENotification = async (thisAccessToken, receiveData) => {
   console.log(
     `BoatUsers Proactive-Event Data: ${JSON.stringify(
       receiveData
     )} and Payload Status:  ${receiveData.event.payload.state.status} `
   );
-  try {
-    let data = JSON.stringify(receiveData);
-    const options = {
-      hostname: "api.amazonalexa.com",
-      path: "/v1/proactiveEvents/stages/development",
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Content-Length": data.length,
-        Authorization: `Bearer ${thisAccessToken}`,
-      },
-    };
+  return new Promise((resolve, reject) => {
+    try {
+      let data = JSON.stringify(receiveData);
+      const options = {
+        hostname: "api.amazonalexa.com",
+        path: "/v1/proactiveEvents/stages/development",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Content-Length": data.length,
+          Authorization: `Bearer ${thisAccessToken}`,
+        },
+      };
 
-    const req = myRequest
-      .request(options, (res) => {
-        let data = "";
+      const req = myRequest
+        .request(options, (res) => {
+          let data = "";
 
-        console.log("Status Code:", res.statusCode);
+          console.log("Status Code:", res.statusCode);
 
-        res.on("data", (chunk) => {
-          data += chunk;
+          res.on("data", (chunk) => {
+            data += chunk;
+          });
+
+          res.on("end", () => {
+            let msg = "Notification Sent to Alexa";
+            console.log(`${msg}`);
+
+            resolve(msg);
+          });
+        })
+        .on("error", (err) => {
+          console.log("Error: ", err.message);
+          reject(err.message);
         });
 
-        res.on("end", () => {
-          console.log("Notification Sent to Alexa");
-        });
-      })
-      .on("error", (err) => {
-        console.log("Error: ", err.message);
-      });
-
-    req.write(data);
-    req.end();
-  } catch (err) {
-    console.log(err);
-  }
+      req.write(data);
+      req.end();
+    } catch (err) {
+      console.log(err);
+    }
+  });
 };
-
-getProactiveAccessToken();
+const stepsGetATokenSendNotification = async () => {
+  let rcAToken = await getProactiveAccessToken();
+  let receiveData = await modifyEvent();
+  await displayProacvtiveENotification(rcAToken, receiveData);
+};
+stepsGetATokenSendNotification();
