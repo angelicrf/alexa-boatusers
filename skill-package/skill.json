@@ -38,6 +38,9 @@
             "publications": [
               {
                 "eventName": "AMAZON.MessageAlert.Activated"
+              },
+              {
+                "eventName": "Alexa.ChangeReport"
               }
             ],
             "endpoint": {
