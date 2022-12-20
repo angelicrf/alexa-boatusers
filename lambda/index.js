@@ -458,7 +458,46 @@ const handlePowerControl = (request, context) => {
   log("DEBUG", "Alexa.PowerController ", JSON.stringify(response));
   context.succeed(response);
 };
+const buildResponse = (options) => {
+  let response = {
+    version: "1.0",
+    response: {
+      outputSpeech: {
+        type: "PlainText",
+        text: options.speechText,
+      },
+      shouldEndSession: options.endSession,
+    },
+  };
+  if (options.repromptText) {
+    response.response.reprompt = {
+      outputSpeech: {
+        type: "PlainText",
+        text: options.repromptText,
+      },
+    };
+  }
+  return response;
+};
+const handleStopIntent = (request, context) => {
+  console.log("stop Intent Callled");
+
+  let options = {
+    speechText: "",
+    repromptText: "",
+    endSession: "",
+  };
+  options.speechText = "Stoped , GoodBye?";
+  //options.repromptText = "Tell me who I should wake up?";
+  options.endSession = true;
+  context.succeed(buildResponse(options));
+};
 exports.handler = (request, context) => {
+  //request.request.intent.name
+  //request.type == 'IntentRequest' // 'LaunchRequest'
+  if (request.intent.name === "AMAZON.StopIntent") {
+    handleStopIntent(request, context);
+  }
   if (
     request.directive.header.namespace === "Alexa.Discovery" &&
     request.directive.header.name === "Discover"
