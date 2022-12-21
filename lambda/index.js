@@ -64,7 +64,6 @@ const sendChangeReportEvent = async (thisToken) => {
     };
 
     var req = myRequest.request(options, function (res) {
-      let getDate = new Date().toISOString();
       var chunks = [];
 
       res.on("data", function (chunk) {
@@ -87,6 +86,7 @@ const sendChangeReportEvent = async (thisToken) => {
         reject(error);
       });
     });
+    let getDate = new Date().toISOString();
     var postData = JSON.stringify({
       event: {
         header: {
@@ -487,46 +487,65 @@ const handleStopIntent = (request, context) => {
     repromptText: "",
     endSession: "",
   };
-  options.speechText = "Stoped , GoodBye?";
-  //options.repromptText = "Tell me who I should wake up?";
+  options.speechText = "Stopped , GoodBye?";
   options.endSession = true;
   context.succeed(buildResponse(options));
 };
+const handleLaunchIntent = (request, context) => {
+  console.log("Launch Intent Callled");
+
+  let options = {
+    speechText: "",
+    repromptText: "",
+    endSession: "",
+  };
+  options.speechText = "Welcome to Boat Users Alexa App";
+  options.repromptText = "Welcome to Boat Users Alexa App";
+  options.endSession = false;
+  context.succeed(buildResponse(options));
+};
 exports.handler = (request, context) => {
-  //request.request.intent.name
-  //request.type == 'IntentRequest' // 'LaunchRequest'
-  if (request.intent.name === "AMAZON.StopIntent") {
-    handleStopIntent(request, context);
+  console.log(request.request.type);
+  if (request.request.type === "LaunchRequest") {
+    handleLaunchIntent(request, context);
   }
-  if (
-    request.directive.header.namespace === "Alexa.Discovery" &&
-    request.directive.header.name === "Discover"
-  ) {
-    log("DEBUG:", "Discover request", JSON.stringify(request));
-    handleDiscovery(request, context, "");
-  } else if (
-    request.directive.header.namespace === "Alexa" &&
-    request.directive.header.name === "ChangeReport"
-  ) {
-    console.log(JSON.stringify(request));
-    handleChangeReport(request, context);
-  } else if (
-    request.directive.header.namespace === "Alexa" &&
-    request.directive.header.name === "ReportState"
-  ) {
-    //console.log(JSON.stringify(request));
-    handleStateReport(request, context);
-  } else if (request.directive.header.namespace === "Alexa.PowerController") {
-    if (
-      request.directive.header.name === "TurnOn" ||
-      request.directive.header.name === "TurnOff"
-    ) {
-      log("DEBUG:", "TurnOn or TurnOff Request", JSON.stringify(request));
-      handlePowerControl(request, context);
+  if (request.request.type === "IntentRequest") {
+    if (request.request.intent.name === "AMAZON.StopIntent") {
+      handleStopIntent(request, context);
     }
-  } else if (request.directive.header.namespace === "Alexa.Authorization") {
-    if (request.directive.header.name === "AcceptGrant") {
-      handleAuthorization(request, context);
+  }
+  if (request.directive != undefined) {
+    console.log(`Angelique Entered ${JSON.stringify(request.directive)}`);
+    if (
+      request.directive.header.namespace === "Alexa.Discovery" &&
+      request.directive.header.name === "Discover"
+    ) {
+      log("DEBUG:", "Discover request", JSON.stringify(request));
+      handleDiscovery(request, context, "");
+    } else if (
+      request.directive.header.namespace === "Alexa" &&
+      request.directive.header.name === "ChangeReport"
+    ) {
+      console.log(JSON.stringify(request));
+      handleChangeReport(request, context);
+    } else if (
+      request.directive.header.namespace === "Alexa" &&
+      request.directive.header.name === "ReportState"
+    ) {
+      //console.log(JSON.stringify(request));
+      handleStateReport(request, context);
+    } else if (request.directive.header.namespace === "Alexa.PowerController") {
+      if (
+        request.directive.header.name === "TurnOn" ||
+        request.directive.header.name === "TurnOff"
+      ) {
+        log("DEBUG:", "TurnOn or TurnOff Request", JSON.stringify(request));
+        handlePowerControl(request, context);
+      }
+    } else if (request.directive.header.namespace === "Alexa.Authorization") {
+      if (request.directive.header.name === "AcceptGrant") {
+        handleAuthorization(request, context);
+      }
     }
   }
 };
