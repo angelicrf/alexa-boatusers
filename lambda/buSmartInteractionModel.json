@@ -44,6 +44,18 @@
                     "samples": [
                         "bu turn off switch"
                     ]
+                } ,
+                {
+                    "name": "AMAZON.FallbackIntent",
+                    "samples": [
+                        "request intent not matched"
+                    ]
+                },
+                {
+                    "name": "AMAZON.SearchAction<object@WeatherForecast[weatherCondition]>"
+                }, 
+                {
+                    "name": "AMAZON.SearchAction<object@WeatherForecast>"
                 }
             ],
             "types": []

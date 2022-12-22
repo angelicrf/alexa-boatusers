@@ -500,7 +500,71 @@ const handleLaunchIntent = (request, context) => {
     endSession: "",
   };
   options.speechText = "Welcome to Boat Users Alexa App";
-  options.repromptText = "Welcome to Boat Users Alexa App";
+  options.endSession = true;
+  context.succeed(buildResponse(options));
+};
+const handleTurnOnEvent = (request, context) => {
+  console.log("BUTurnOnSwitch Callled");
+
+  let options = {
+    speechText: "",
+    repromptText: "",
+    endSession: "",
+  };
+  options.speechText = "Boat Users Switch Turned On";
+  options.repromptText = "Boat Users Switch Turned On";
+  options.endSession = false;
+  context.succeed(buildResponse(options));
+};
+const handleTurnOffEvent = (request, context) => {
+  console.log("BUTurnOffSwitch Callled");
+
+  let options = {
+    speechText: "",
+    repromptText: "",
+    endSession: "",
+  };
+  options.speechText = "Boat Users Switch Turned Off";
+  options.repromptText = "Boat Users Switch Turned Off";
+  options.endSession = false;
+  context.succeed(buildResponse(options));
+};
+const handleHelpEvent = (request, context) => {
+  console.log("AMAZON.HelpIntent Callled");
+
+  let options = {
+    speechText: "",
+    repromptText: "",
+    endSession: "",
+  };
+  options.speechText = "How Boat Users Can help You?";
+  options.repromptText = "How Boat Users Can help You?";
+  options.endSession = false;
+  context.succeed(buildResponse(options));
+};
+const handleCancelEvent = (request, context) => {
+  console.log("AMAZON.CancelIntent Callled");
+
+  let options = {
+    speechText: "",
+    repromptText: "",
+    endSession: "",
+  };
+  options.speechText = "Canceled, Goodbye";
+  options.endSession = true;
+  context.succeed(buildResponse(options));
+};
+const handleFallbackEvent = (request, context) => {
+  //AMAZON.FallbackIntent
+  console.log("AMAZON.FallbackIntent Callled");
+
+  let options = {
+    speechText: "",
+    repromptText: "",
+    endSession: "",
+  };
+  options.speechText = "Intent Not found";
+  options.repromptText = "FallBack intent Boat Users, Try again?";
   options.endSession = false;
   context.succeed(buildResponse(options));
 };
@@ -512,6 +576,21 @@ exports.handler = (request, context) => {
   if (request.request.type === "IntentRequest") {
     if (request.request.intent.name === "AMAZON.StopIntent") {
       handleStopIntent(request, context);
+    }
+    if (request.request.intent.name === "AMAZON.CancelIntent") {
+      handleCancelEvent(request, context);
+    }
+    if (request.request.intent.name === "AMAZON.HelpIntent") {
+      handleHelpEvent(request, context);
+    }
+    if (request.request.intent.name === "BUTurnOnSwitch") {
+      handleTurnOnEvent(request, context);
+    }
+    if (request.request.intent.name === "BUTurnOffSwitch") {
+      handleTurnOffEvent(request, context);
+    }
+    if (request.request.intent.name === "AMAZON.FallbackIntent") {
+      handleFallbackEvent(request, context);
     }
   }
   if (request.directive != undefined) {
@@ -532,7 +611,6 @@ exports.handler = (request, context) => {
       request.directive.header.namespace === "Alexa" &&
       request.directive.header.name === "ReportState"
     ) {
-      //console.log(JSON.stringify(request));
       handleStateReport(request, context);
     } else if (request.directive.header.namespace === "Alexa.PowerController") {
       if (
