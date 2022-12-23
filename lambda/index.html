@@ -71,7 +71,7 @@
     let thisBody =  JSON.stringify({
     "response_type": "device_code",
     "client_id": "amzn1.application-oa2-client.8e364cf34cb649508a1746e26a4429d4",
-    "scope": "profile:user_id"
+    "scope": "profile:user_id alexa::ask:skills:readwrite alexa::ask:models:readwrite alexa::ask:skills:test"
         })
     fetch(`https://api.amazon.com/auth/o2/create/codepair`, {
     method: 'POST',

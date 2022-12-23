@@ -1,6 +1,7 @@
 const AWS = require("aws-sdk");
 const lambda = new AWS.Lambda();
 const myRequest = require("https");
+const { SkillMessagingServiceClient } = require('ask-sdk-model').services.proactiveEvents;
 let thisState = "ON";
 
 const callChildLambdaFunc = async (thisName) => {
