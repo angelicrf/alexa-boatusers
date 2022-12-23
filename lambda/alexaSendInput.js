@@ -94,8 +94,6 @@ const generateAccessToken = (getDevice) => {
         console.log(responseAToken);
 
         if (JSON.parse(data).error_description == null) {
-          localStorage.removeItem("userSInputInfo");
-          localStorage.setItem("userAToken", JSON.stringify(responseAToken));
           resolve(responseAToken);
         }
       });
