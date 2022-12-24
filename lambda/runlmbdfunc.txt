@@ -1,0 +1,15 @@
+
+curl -v -X POST "https://sdtvcei9b2.execute-api.us-east-1.amazonaws.com/test/helloworld?name=John&city=Seattle" -H "content-type: application/json" -H "day: Thursday" -d "{ \"time\": \"evening\" }"
+
+
+curl -v -X POST \
+  'https://sdtvcei9b2.execute-api.us-east-1.amazonaws.com/test/helloworld?name=John&city=Seattle' \
+  -H 'content-type: application/json' \
+  -H 'day: Thursday' \
+  -H "Connection: close" \
+  -d '{ "time": "evening" }'
+
+curl -X GET \
+  'https://sdtvcei9b2.execute-api.us-east-1.amazonaws.com/test/helloworld?name=John&city=Seattle' \
+  -H 'content-type: application/json' \
+  -H 'day: Thursday'
