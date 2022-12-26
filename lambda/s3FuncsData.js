@@ -81,5 +81,14 @@ const putS3DataInfo = () => {
   });
 };
 // Have to Update Date constantly and Signeture
+let thisDay =
+  date1.getUTCFullYear() +
+  "" +
+  (date1.getUTCMonth() + 1) +
+  "" +
+  date1.getUTCDate() +
+  "T";
+
+//thisDay + Convert the Time from EST to GMT + 'Z'
 getS3DataInfo();
 //putS3DataInfo();
