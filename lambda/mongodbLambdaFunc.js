@@ -12,15 +12,9 @@ let client = null;
 //}
 //cmd atlas cloudProviders accessRoles aws authorize arn:aws:iam::322658870421:role/lambda_exec_BoatUsersLmbdFunc --projectId 63a9c2c0a6942d034b8beef6
 //remove the conditions and save IAM role before running sts assume-role
-//aws sts assume-role --role-arn arn:aws:iam::322658870421:role/boatusers-mdb-cloudproviders-role --role-session-name "RoleSession2" --profile boatusers
+//cmd aws sts assume-role --role-arn arn:aws:iam::322658870421:role/boatusers-mdb-cloudproviders-role --role-session-name "RoleSession2" --profile boatusers
 //replace values with process.env
 
-var username = encodeURIComponent("ASIAUWH7XUSKVL2BKTE5");
-var password = encodeURIComponent("b6AZl5IO+rvM68ioqVt57ETUn+ghJDL/DcOMC8I6");
-var thisSessionToken = encodeURIComponent(
-  "IQoJb3JpZ2luX2VjEAEaCXVzLWVhc3QtMSJHMEUCIQCQm4EWcaawW5nH6f4xta6A5bQbz9v7KZDtPvD75UkMQgIgfIFMHdUR/8K4Gjvu+2Je/rTYrh6kVHZ9fSzq4rUW774qmQIIShAEGgwzMjI2NTg4NzA0MjEiDIXiluWi0m6NWHDKYCr2AYe64xfHiQzLLgRT8e/OfscyoBerZmUe54RtV6m7N8W2rsPoi5ZK4sjFzG+Tod+nj7v4Zm8pW5cjhYUDgvDR5SE2GgmJh3o6UCwBnWW6tnkhQ9HTq7gGHIQ7+lwtkbGUlKpSWJ8FrXMXExvwvX2895SbVLcjxZ0dCFWVSG33Dp8O0WmdMUEVdlhM0YVaOyEL8ihRF8LQxgQTbmhVmss+WPCjHscJmaCK3wP6WazkpAbejHq2Fi65lUKL/n16BDl/okpJAzuQ4hsAJ+4v4nnZFpGIgDWZEARDk6SdpRp6hc4bXRoAUBOnHMTGknQWPB7eIYiBJV+ArzDm6rGdBjqdAWLJqFCZPOHfhnyPHKP2+fuhCAWNHbPkgFTzFMUGZTO42BEHRQW6yLs1DT59ZE/DIpGgdbJzNkJkYBGHTn8OmfdCNjZIH0psCs76ibPYcMbqtBCdBRoJFIvrvwHjPR1BDxKluOEfMECJGb/9o8hOgfSE0MJ6ZQf9YpU8wihZE+ZTLluKcQrynHP6sucm+z0hVlNvAw5RgZsm0L8JKS0="
-);
-const mongoUrl = `mongodb+srv://ASIAUWH7XUSKVL2BKTE5:${password}@budatabase.larhnar.mongodb.net/budb?authSource=%24external&authMechanism=MONGODB-AWS&retryWrites=true&w=majority&authMechanismProperties=AWS_SESSION_TOKEN:${thisSessionToken}`;
 const getMongoClientWithIAMRole = () => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -94,15 +88,14 @@ const buMdbFindData = (thisClient) => {
 };
 const mongodbResultProcess = async () => {
   let getClient = await getMongoClientWithIAMRole();
-  await buMdbFindData(getClient);
+  let getDataById = await buMdbFindData(getClient);
+  return getDataById;
 };
-mongodbResultProcess();
 module.exports.handler = async () => {
   console.log("module called");
-  let getMdbData = await buMdbFindData();
+  let getMdbData = await mongodbResultProcess();
   return {
     statusCode: 200,
     mdbGetResult: getMdbData,
   };
-  /*const databases = await client.db("admin").command({ listDatabases: 1 });*/
 };
