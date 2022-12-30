@@ -1,0 +1,51 @@
+{
+    "manifest": {
+        "apis": {
+            "smartHome": {
+                "endpoint": {
+                    "uri": "arn:aws:lambda:us-east-1:322658870421:function:busers-smart-boat-skill"
+                },
+                "protocolVersion": "3",
+                "regions": {
+                    "NA": {
+                        "endpoint": {
+                            "uri": "arn:aws:lambda:us-east-1:322658870421:function:busers-smart-boat-skill"
+                        }
+                    }
+                }
+            }
+        },
+        "manifestVersion": "1.0",
+        "permissions": [
+              {
+                "name": "alexa::async_event:write"
+              },
+              {
+                "name": "alexa::devices:all:notifications:write"
+              },
+              {
+                "name": "alexa::alerts:reminders:skill:readwrite"
+              }
+        ],
+        "publishingInformation": {
+            "locales": {
+                "en-US": {
+                    "name": "BUSmartSkills"
+                }
+            }
+        },
+        "events": {
+            "publications": [
+              {
+                "eventName": "AMAZON.MessageAlert.Activated"
+              },
+              {
+                "eventName": "AMAZON.WeatherAlert.Activated"
+              }
+            ],
+            "endpoint": {
+              "uri": "arn:aws:lambda:us-east-1:322658870421:function:busers-smart-boat-skill"
+            }
+          }
+    }
+}

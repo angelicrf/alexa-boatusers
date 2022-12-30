@@ -1,0 +1,64 @@
+{
+    "interactionModel": {
+        "languageModel": {
+            "invocationName": "bu smart skills",
+            "intents": [
+                {
+                    "name": "AMAZON.CancelIntent",
+                    "samples": [
+                        "cancel process",
+                        "cancel operation"
+                    ]
+                },
+                {
+                    "name": "AMAZON.HelpIntent",
+                    "samples": [
+                        "help us",
+                        "help me"
+                    ]
+                },
+                {
+                    "name": "AMAZON.StopIntent",
+                    "samples": [
+                        "bu boat stop"
+                    ]
+                },
+                {
+                    "name": "AMAZON.NavigateHomeIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.FallbackIntent",
+                    "samples": []
+                },
+                {
+                    "name": "BUTurnOnSwitch",
+                    "slots": [],
+                    "samples": [
+                        "bu turn on switch"
+                    ]
+                },
+                {
+                    "name": "BUTurnOffSwitch",
+                    "slots": [],
+                    "samples": [
+                        "bu turn off switch"
+                    ]
+                } ,
+                {
+                    "name": "AMAZON.FallbackIntent",
+                    "samples": [
+                        "request intent not matched"
+                    ]
+                },
+                {
+                    "name": "AMAZON.SearchAction<object@WeatherForecast[weatherCondition]>"
+                }, 
+                {
+                    "name": "AMAZON.SearchAction<object@WeatherForecast>"
+                }
+            ],
+            "types": []
+        }
+    }
+}

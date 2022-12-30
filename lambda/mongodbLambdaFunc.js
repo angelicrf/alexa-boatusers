@@ -2,6 +2,7 @@ const { MongoClient } = require("mongodb");
 const { STS } = require("aws-sdk");
 const sts = new STS();
 let client = null;
+
 //cmd : aws sts get-session-token
 //cmd atlas cloudProviders accessRoles aws create --projectId 63a9c2c0a6942d034b8beef6
 //make sure to add conditions to IAM specific role's trust relationships before authorizing arn
@@ -91,11 +92,11 @@ const mongodbResultProcess = async () => {
   let getDataById = await buMdbFindData(getClient);
   return getDataById;
 };
-module.exports.handler = async () => {
-  console.log("module called");
+exports.handler = async (event) => {
+  console.log(`module called & ${JSON.stringify(event)}`);
   let getMdbData = await mongodbResultProcess();
   return {
     statusCode: 200,
-    mdbGetResult: getMdbData,
+    mdbGetResult: `passed ${getMdbData}`,
   };
 };

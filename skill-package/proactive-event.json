@@ -1,0 +1,25 @@
+{
+  "timestamp": "data",
+  "referenceId": "data",
+  "expiryTime": "data",
+  "event": {
+    "name": "AMAZON.MessageAlert.Activated",
+    "payload": {
+      "state": {
+        "status": "UNREAD",
+        "freshness": "NEW"
+      },
+      "messageGroup": {
+        "creator": {
+          "name": "Angelique BUSmartSkills"
+        },
+        "count": 1
+      }
+    }
+  },
+ "relevantAudience": {
+    "type": "Multicast",
+    "payload": {}
+  }
+}
+
