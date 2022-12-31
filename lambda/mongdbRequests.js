@@ -117,7 +117,7 @@ const mongodbPutRequest = () => {
 
 const mnDbFuncProcess = async () => {
   let getMnId = await mongodbGetRequest();
-  let postmnData = await mongodbPostRequest("123456");
+  let postMnData = await mongodbPostRequest("123456");
   let putMnData = await mongodbPutRequest();
 };
 mnDbFuncProcess();
