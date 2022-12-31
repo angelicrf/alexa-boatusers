@@ -120,17 +120,28 @@ exports.handler = async (event, context, callback) => {
       });
     }
   } else if (strValue == "POST") {
-    console.log(`posted body called & ${JSON.stringify(event.body)}`);
     let postParamValue = JSON.stringify(
       event.queryStringParameters.postData
     ).replace(/^"(.+(?="$))"$/, "$1");
 
     if (postParamValue == "insertData") {
       // run insert data mongodb func
-      console.log("insideinsert");
       return JSON.stringify({
         statusCode: 200,
-        mdbGetResult: `Get passed with param ${postParamValue}`,
+        mdbPostResult: `Post passed with param ${postParamValue}`,
+      });
+    }
+  } else if (strValue == "PUT") {
+    //putData=mongoData
+    let putParamValue = JSON.stringify(
+      event.queryStringParameters.putData
+    ).replace(/^"(.+(?="$))"$/, "$1");
+
+    if (putParamValue == "mongoData") {
+      // run put data mongodb func
+      return JSON.stringify({
+        statusCode: 200,
+        mdbPutResult: `Put passed with param ${putParamValue}`,
       });
     }
   }
