@@ -1,7 +1,5 @@
 const myrequest = require("https");
-const open = require("open");
 const puppeteer = require("puppeteer");
-var alert = require("alert");
 let nIntervId;
 let isStep3Started = false;
 //inside fetch get then
@@ -87,15 +85,8 @@ const generateAlexaCode = () => {
 const sleep = (ms) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
-const generateAlexaAToken = async () => {
-  let getData = await generateAlexaCode();
-  let userCode = JSON.parse(getData).user_code;
-  let deviceCode = JSON.parse(getData).device_code;
-  console.log(
-    `${JSON.parse(getData).user_code} and device code is : ${
-      JSON.parse(getData).device_code
-    }`
-  );
+const generateAlexaAToken = async (userCode) => {
+  console.log(userCode);
 
   const browser = await puppeteer.launch({
     headless: false,
@@ -105,42 +96,42 @@ const generateAlexaAToken = async () => {
   const page = await browser.newPage();
   await page.goto(`https://www.amazon.com/a/code?myCode=${userCode}`);
 
-  nIntervId = setInterval(async () => {
-    const url = await page.url();
-    if (url == `https://www.amazon.com/a/code?myCode=${userCode}`) {
-      resetInterval();
-      const textInputSelector = "#cbl-registration-field";
-      const buttonSelector = "#cbl-continue-button";
-      await page.waitForSelector(textInputSelector);
-      await sleep(4000);
-      await page.$eval(
-        textInputSelector,
-        (el, userCode, foo) => {
-          console.log("Inside Eval");
-          return (el.value = userCode);
-        },
-        userCode,
-        "BuFoo"
-      );
-      await page.waitForSelector(buttonSelector);
-      await sleep(4000);
-      await page.click(buttonSelector);
-      await sleep(5000);
-      const newUrl = await page.url();
-      if (
-        newUrl.toString().split("?")[0] == "https://na.account.amazon.com/ap/oa"
-      ) {
-        await page.$eval("input[name=consentApproved]", (el) => el.click());
+  return new Promise((resolve, reject) => {
+    nIntervId = setInterval(async () => {
+      const url = await page.url();
+      if (url == `https://www.amazon.com/a/code?myCode=${userCode}`) {
+        resetInterval();
+        const textInputSelector = "#cbl-registration-field";
+        const buttonSelector = "#cbl-continue-button";
+        await page.waitForSelector(textInputSelector);
+        await sleep(4000);
+        await page.$eval(
+          textInputSelector,
+          (el, userCode, foo) => {
+            console.log("Inside Eval");
+            return (el.value = userCode);
+          },
+          userCode,
+          "BuFoo"
+        );
+        await page.waitForSelector(buttonSelector);
+        await sleep(4000);
+        await page.click(buttonSelector);
         await sleep(5000);
-        await browser.close();
-        isStep3Started = true;
-        await generateAlexaATokenFromCode(userCode, deviceCode);
+        const newUrl = await page.url();
+        if (
+          newUrl.toString().split("?")[0] ==
+          "https://na.account.amazon.com/ap/oa"
+        ) {
+          await page.$eval("input[name=consentApproved]", (el) => el.click());
+          await sleep(5000);
+          await browser.close();
+          isStep3Started = true;
+          resolve(isStep3Started);
+        }
       }
-    }
-  }, 1000);
-  if (!nIntervId) {
-    alert(`nInterval is ${nIntervId}`);
-  }
+    }, 1000);
+  });
 };
 const generateAlexaATokenFromCode = (userCode, deviceCode) => {
   return new Promise((resolve, reject) => {
@@ -186,6 +177,16 @@ const generateAlexaATokenFromCode = (userCode, deviceCode) => {
     req.end();
   });
 };
-//https://www.amazon.com/a/code
-generateAlexaAToken();
+const runAllFuncs = async () => {
+  let getData = await generateAlexaCode();
+  let userCode = JSON.parse(getData).user_code;
+  let deviceCode = JSON.parse(getData).device_code;
+  let getValueData = await generateAlexaAToken(userCode);
+  //typeof nIntervId === "undefined" &&
+  if (getValueData) {
+    console.log(`getDataValue ${getValueData}`);
+    let getAToken = await generateAlexaATokenFromCode(userCode, deviceCode);
+  }
+};
+runAllFuncs();
 module.exports = { generateAlexaAToken };
