@@ -1,4 +1,11 @@
-//https://76ewqh4kz26525z22jjuyzooqy0ziulc.lambda-url.us-east-1.on.aws/
+//Get https://76ewqh4kz26525z22jjuyzooqy0ziulc.lambda-url.us-east-1.on.aws/?alexaIntent=LaunchRequest
+//Get https://76ewqh4kz26525z22jjuyzooqy0ziulc.lambda-url.us-east-1.on.aws/?alexaIntent=BUTurnOnSwitch
+//Get https://76ewqh4kz26525z22jjuyzooqy0ziulc.lambda-url.us-east-1.on.aws/?alexaIntent=BUTurnOffSwitch
+//Get https://76ewqh4kz26525z22jjuyzooqy0ziulc.lambda-url.us-east-1.on.aws/?alexaIntent=FallBack
+//Get https://76ewqh4kz26525z22jjuyzooqy0ziulc.lambda-url.us-east-1.on.aws/?alexaIntent=StopIntent
+//Get https://76ewqh4kz26525z22jjuyzooqy0ziulc.lambda-url.us-east-1.on.aws/?alexaIntent=HelpIntent
+//Get https://76ewqh4kz26525z22jjuyzooqy0ziulc.lambda-url.us-east-1.on.aws/?alexaIntent=CancelIntent
+
 const AWS = require("aws-sdk");
 const lambda = new AWS.Lambda();
 const myRequest = require("https");
@@ -568,6 +575,16 @@ const handleFallbackEvent = (request, context) => {
   options.repromptText = "FallBack intent Boat Users, Try again?";
   options.endSession = false;
   context.succeed(buildResponse(options));
+};
+const alexaApiRequestsProcess = async() => {
+  // generate a new access token to launch
+  // use the access Token to send notification request
+  // use the access Token to send state change report request
+  //------
+  // generate access token to make alexa requests
+  //let getACode = 
+  let getAToken  = await issueAccessToken('')
+  // use the second access Token to make alexa requests
 };
 exports.handler = (request, context, callback) => {
   if (JSON.stringify(request.requestContext) != undefined) {
