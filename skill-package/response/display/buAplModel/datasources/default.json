@@ -1,0 +1,9 @@
+{
+    "buData": {
+      "properties": {
+        "title": "Welcome to Boat Users Alexa Smart App!",
+        "subTitle": "BoatUsers App uses both primitive and responsive components",
+        "buStartText": "BoatUsersStart"
+      }
+    }
+}

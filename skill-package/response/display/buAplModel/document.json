@@ -1,0 +1,65 @@
+{
+    "type": "APL",
+    "version": "2022.2",
+    "description": "BoatUsers APL",
+    "theme": "dark",
+    "import": [
+      {
+        "name": "alexa-layouts",
+        "version": "1.6.0"
+      }
+    ],
+    "mainTemplate": {
+      "parameters": [
+        "buData"
+      ],
+      "items": [
+        {
+          "type": "Container",
+          "width": "100%",
+          "height": "100%",
+          "items": [
+            {
+              "type": "AlexaBackground",
+              "backgroundColor": "gray"
+            },
+            {
+              "type": "AlexaButton",
+              "id": "onClickButton",
+              "alignSelf": "center",
+              "buttonText": "click",
+              "padding": "@spacingLarge",
+              "primaryAction": {
+                "type": "SetValue",
+                "componentId": "bDText",
+                "property": "text",
+                "value": "You pressed Bu Command Btn!"
+              }
+            },
+            {
+              "type": "Text",
+              "id": "bDText",
+              "textAlignVertical": "center",
+              "textAlign": "center",
+              "paddingLeft": "@spacingSmall",
+              "paddingRight": "@spacingSmall",
+              "paddingTop": "@spacingSmall",
+              "text": ""
+            },       {
+              "type": "AlexaHeader",
+              "headerTitle": "${buData.properties.title}",
+              "headerSubtitle": "${buData.properties.subTitle}"
+            },
+            {
+              "type": "Text",
+              "height": "100%",
+              "shrink": 1,
+              "textAlign": "center",
+              "textAlignVertical": "center",
+              "text": "${buData.properties.buStartText}"
+            }
+          ]
+        }
+      ]
+    }
+  }
