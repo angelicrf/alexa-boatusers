@@ -1,14 +1,13 @@
-//Get https://76ewqh4kz26525z22jjuyzooqy0ziulc.lambda-url.us-east-1.on.aws/?alexaIntent=LaunchRequest
-//Get https://76ewqh4kz26525z22jjuyzooqy0ziulc.lambda-url.us-east-1.on.aws/?alexaIntent=BUTurnOnSwitch
-//Get https://76ewqh4kz26525z22jjuyzooqy0ziulc.lambda-url.us-east-1.on.aws/?alexaIntent=BUTurnOffSwitch
-//Get https://76ewqh4kz26525z22jjuyzooqy0ziulc.lambda-url.us-east-1.on.aws/?alexaIntent=FallBack
-//Get https://76ewqh4kz26525z22jjuyzooqy0ziulc.lambda-url.us-east-1.on.aws/?alexaIntent=StopIntent
-//Get https://76ewqh4kz26525z22jjuyzooqy0ziulc.lambda-url.us-east-1.on.aws/?alexaIntent=HelpIntent
-//Get https://76ewqh4kz26525z22jjuyzooqy0ziulc.lambda-url.us-east-1.on.aws/?alexaIntent=CancelIntent
+//Post https://76ewqh4kz26525z22jjuyzooqy0ziulc.lambda-url.us-east-1.on.aws/?alexaEvent=ReportState
+//Post https://76ewqh4kz26525z22jjuyzooqy0ziulc.lambda-url.us-east-1.on.aws/?alexaEvent=PowerController
+//Post https://76ewqh4kz26525z22jjuyzooqy0ziulc.lambda-url.us-east-1.on.aws/?alexaEvent=Discovery
+//Post https://76ewqh4kz26525z22jjuyzooqy0ziulc.lambda-url.us-east-1.on.aws/?alexaEvent=ChangeState
+//Post https://76ewqh4kz26525z22jjuyzooqy0ziulc.lambda-url.us-east-1.on.aws/?alexaEvent=Authorization
 
 const AWS = require("aws-sdk");
 const lambda = new AWS.Lambda();
 const myRequest = require("https");
+const { onclickAToken } = require("./retreiveAccessToken");
 let thisState = "ON";
 
 const callChildLambdaFunc = async (thisName) => {
@@ -142,6 +141,124 @@ const sendChangeReportEvent = async (thisToken) => {
 
     req.end();
   });
+};
+const apiPowerControlResponse = async (event, context) => {
+  var requestMethod = JSON.parse(event.body).PowerHeader.name;
+  var responseHeader = JSON.parse(event.body).PowerHeader;
+  responseHeader.namespace = "Alexa";
+  responseHeader.name = "Response";
+  responseHeader.messageId = responseHeader.messageId + "-R";
+  responseHeader.correlationToken = responseHeader.messageId + "-R";
+  var requestToken = JSON.parse(event.body).powerToken;
+  //var powerResult;
+  thisState = "";
+
+  if (requestMethod === "TurnOn") {
+    //powerResult = "ON";
+    thisState = "ON";
+  } else if (requestMethod === "TurnOff") {
+    //powerResult = "OFF";
+    thisState = "OFF";
+  }
+  // Return the updated powerState.  Always include EndpointHealth in your Alexa.Response
+  var contextResult = {
+    properties: [
+      {
+        namespace: "Alexa.PowerController",
+        name: "powerState",
+        value: thisState,
+        timeOfSample: "2022-11-20T16:20:50.52Z", //retrieve from result.
+        uncertaintyInMilliseconds: 500,
+      },
+      {
+        namespace: "Alexa.EndpointHealth",
+        name: "connectivity",
+        value: {
+          value: "OK",
+        },
+        timeOfSample: "2022-11-20T22:43:17.877738+00:00",
+        uncertaintyInMilliseconds: 0,
+      },
+    ],
+  };
+  var response = {
+    context: contextResult,
+
+    event: {
+      header: responseHeader,
+      endpoint: {
+        scope: {
+          type: "BearerToken",
+          token: requestToken,
+        },
+        endpointId: "sample-switch-01",
+      },
+      payload: {},
+    },
+  };
+  log("DEBUG", "Alexa.PowerController ", JSON.stringify(response));
+  context.succeed(response);
+};
+const apiStateReportResponse = async (event, context) => {
+  var responseHeader = JSON.parse(event.body).repHeader; // an object
+  var requestToken = JSON.parse(event.body).repToken;
+
+  var contextResult = {
+    properties: [
+      {
+        namespace: "Alexa.PowerController",
+        name: "powerState",
+        value: thisState,
+        timeOfSample: "2022-11-20T16:20:50.52Z", //retrieve from result.
+        uncertaintyInMilliseconds: 50,
+      },
+      {
+        namespace: "Alexa.EndpointHealth",
+        name: "connectivity",
+        value: {
+          value: "OK",
+        },
+        timeOfSample: "2022-11-20T22:43:17.877738+00:00",
+        uncertaintyInMilliseconds: 0,
+      },
+      {
+        namespace: "Alexa.EndpointHealth",
+        name: "battery",
+        value: {
+          health: {
+            state: "WARNING",
+            reasons: ["LOW_CHARGE"],
+          },
+          levelPercentage: 45,
+        },
+        timeOfSample: "2022-11-20T16:20:50Z",
+        uncertaintyInMilliseconds: 0,
+      },
+    ],
+  };
+  var response = {
+    context: contextResult,
+
+    event: {
+      header: responseHeader,
+      endpoint: {
+        scope: {
+          type: "BearerToken",
+          token: requestToken,
+        },
+        endpointId: "sample-switch-01",
+      },
+      payload: {},
+    },
+  };
+  log(
+    "DEBUG Angelique Boat Users State Report API ",
+    "Alexa.PowerController ",
+    JSON.stringify(response)
+  );
+
+  await getUserProfileInfo(requestToken);
+  context.succeed(response);
 };
 const handleStateReport = async (request, context) => {
   var requestMethod = request.directive.header.name;
@@ -576,15 +693,101 @@ const handleFallbackEvent = (request, context) => {
   options.endSession = false;
   context.succeed(buildResponse(options));
 };
-const alexaApiRequestsProcess = async() => {
-  // generate a new access token to launch
+const alexaApiRequestsProcess = async () => {
+  // generate a new access token to launch and discovery
   // use the access Token to send notification request
   // use the access Token to send state change report request
   //------
   // generate access token to make alexa requests
-  //let getACode = 
-  let getAToken  = await issueAccessToken('')
+  let secondAToken = await onclickAToken();
   // use the second access Token to make alexa requests
+  await apiRequestReportState(secondAToken);
+};
+const apiRequestReportState = (thisToken) => {
+  return new Promise((resolve, reject) => {
+    var options = {
+      method: "POST",
+      hostname: "76ewqh4kz26525z22jjuyzooqy0ziulc.lambda-url.us-east-1.on.aws",
+      path: "/?alexaEvent=ReportState",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      maxRedirects: 20,
+    };
+
+    var req = myRequest.request(options, function (res) {
+      var chunks = [];
+
+      res.on("data", function (chunk) {
+        chunks.push(chunk);
+      });
+
+      res.on("end", function (chunk) {
+        var body = Buffer.concat(chunks);
+        console.log(body.toString());
+      });
+
+      res.on("error", function (error) {
+        console.error(error);
+      });
+    });
+
+    var postData = JSON.stringify({
+      repHeader: {
+        namespace: "Alexa",
+        name: "ReportState",
+        messageId: "newUUI",
+      },
+      repToken: `${thisToken}`,
+    });
+
+    req.write(postData);
+
+    req.end();
+  });
+};
+const apiRequestPowerControl = (thisToken, thisName) => {
+  return new Promise((resolve, reject) => {
+    var options = {
+      method: "POST",
+      hostname: "76ewqh4kz26525z22jjuyzooqy0ziulc.lambda-url.us-east-1.on.aws",
+      path: "/?alexaEvent=PowerController",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      maxRedirects: 20,
+    };
+
+    var req = myRequest.request(options, function (res) {
+      var chunks = [];
+
+      res.on("data", function (chunk) {
+        chunks.push(chunk);
+      });
+
+      res.on("end", function (chunk) {
+        var body = Buffer.concat(chunks);
+        console.log(body.toString());
+      });
+
+      res.on("error", function (error) {
+        console.error(error);
+      });
+    });
+
+    var postData = JSON.stringify({
+      powerHeader: {
+        namespace: "Alexa",
+        name: `${thisName}`, //TurnOn TurnOff
+        messageId: "newUUI",
+      },
+      powerToken: `${thisToken}`,
+    });
+
+    req.write(postData);
+
+    req.end();
+  });
 };
 exports.handler = (request, context, callback) => {
   if (JSON.stringify(request.requestContext) != undefined) {
@@ -608,6 +811,29 @@ exports.handler = (request, context, callback) => {
             thisMsg: "success",
           }),
         });
+      }
+    }
+    if (strValue == "POST") {
+      let paramValue = JSON.stringify(
+        request.queryStringParameters.alexaMsg
+      ).replace(/^"(.+(?="$))"$/, "$1");
+
+      if (paramValue == "repState") {
+        if (JSON.stringify(request.body) != undefined) {
+          // call api responses
+          /* callback(null, {
+            statusCode: 200,
+            headers: {
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              thisMsg: "success",
+            }),
+          }); */
+          handleStateReport(request, context);
+        }
       }
     }
   }

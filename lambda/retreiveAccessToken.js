@@ -177,16 +177,19 @@ const generateAlexaATokenFromCode = (userCode, deviceCode) => {
     req.end();
   });
 };
-const runAllFuncs = async () => {
-  let getData = await generateAlexaCode();
-  let userCode = JSON.parse(getData).user_code;
-  let deviceCode = JSON.parse(getData).device_code;
-  let getValueData = await generateAlexaAToken(userCode);
-  //typeof nIntervId === "undefined" &&
-  if (getValueData) {
-    console.log(`getDataValue ${getValueData}`);
-    let getAToken = await generateAlexaATokenFromCode(userCode, deviceCode);
-  }
+const onclickAToken = async () => {
+  return new Promise(async (resolve, reject) => {
+    let getData = await generateAlexaCode();
+    let userCode = JSON.parse(getData).user_code;
+    let deviceCode = JSON.parse(getData).device_code;
+    let getValueData = await generateAlexaAToken(userCode);
+    //typeof nIntervId === "undefined" &&
+    if (getValueData) {
+      console.log(`getDataValue ${getValueData}`);
+      let getAToken = await generateAlexaATokenFromCode(userCode, deviceCode);
+      resolve(getAToken);
+    }
+  });
 };
-runAllFuncs();
-module.exports = { generateAlexaAToken };
+onclickAToken();
+module.exports = { onclickAToken };
