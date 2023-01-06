@@ -693,6 +693,19 @@ const handleFallbackEvent = (request, context) => {
   options.endSession = false;
   context.succeed(buildResponse(options));
 };
+const handleAplEvent = (request, context) => {
+  console.log("APL Event Callled");
+
+  let options = {
+    speechText: "",
+    repromptText: "",
+    endSession: "",
+  };
+  options.speechText = "APL Event called";
+  options.repromptText = "APL Event called?";
+  options.endSession = true;
+  context.succeed(buildResponse(options));
+};
 const alexaApiRequestsProcess = async () => {
   // generate a new access token to launch and discovery
   // use the access Token to send notification request
@@ -789,6 +802,28 @@ const apiRequestPowerControl = (thisToken, thisName) => {
     req.end();
   });
 };
+const alexaAPLRequest = () => {
+  const aplDocumentId = "busersAplResponse";
+
+  const dataSource = {
+    buData: {
+      properties: {
+        title: "Welcome to Boat Users Alexa Smart App!",
+        subTitle: "BoatUsers App uses both primitive and responsive components",
+        buStartText: "BoatUsersStart",
+      },
+    },
+  };
+  return {
+    type: "Alexa.Presentation.APL.RenderDocument",
+    token: "documentToken",
+    document: {
+      type: "Link",
+      src: "doc://alexa/apl/documents/" + aplDocumentId,
+    },
+    datasources: dataSource,
+  };
+};
 exports.handler = (request, context, callback) => {
   if (JSON.stringify(request.requestContext) != undefined) {
     let requestType = JSON.stringify(request.requestContext.http.method);
@@ -820,18 +855,6 @@ exports.handler = (request, context, callback) => {
 
       if (paramValue == "repState") {
         if (JSON.stringify(request.body) != undefined) {
-          // call api responses
-          /* callback(null, {
-            statusCode: 200,
-            headers: {
-              "Access-Control-Allow-Origin": "*",
-              "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              thisMsg: "success",
-            }),
-          }); */
           handleStateReport(request, context);
         }
       }
@@ -861,6 +884,7 @@ exports.handler = (request, context, callback) => {
       if (request.request.intent.name === "AMAZON.FallbackIntent") {
         handleFallbackEvent(request, context);
       }
+      // handle APL request
     }
   }
   if (request.directive != undefined) {

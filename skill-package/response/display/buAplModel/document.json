@@ -1,65 +1,163 @@
 {
-    "type": "APL",
-    "version": "2022.2",
-    "description": "BoatUsers APL",
-    "theme": "dark",
-    "import": [
+  "type": "APL",
+  "version": "2022.2",
+  "description": "BoatUsers APL",
+  "theme": "dark",
+  "import": [
       {
-        "name": "alexa-layouts",
-        "version": "1.6.0"
+          "name": "alexa-layouts",
+          "version": "1.6.0"
       }
-    ],
-    "mainTemplate": {
+  ],
+  "mainTemplate": {
       "parameters": [
-        "buData"
+          "buData"
       ],
       "items": [
-        {
-          "type": "Container",
-          "width": "100%",
-          "height": "100%",
-          "items": [
-            {
-              "type": "AlexaBackground",
-              "backgroundColor": "gray"
-            },
-            {
-              "type": "AlexaButton",
-              "id": "onClickButton",
-              "alignSelf": "center",
-              "buttonText": "click",
-              "padding": "@spacingLarge",
-              "primaryAction": {
-                "type": "SetValue",
-                "componentId": "bDText",
-                "property": "text",
-                "value": "You pressed Bu Command Btn!"
-              }
-            },
-            {
-              "type": "Text",
-              "id": "bDText",
-              "textAlignVertical": "center",
-              "textAlign": "center",
-              "paddingLeft": "@spacingSmall",
-              "paddingRight": "@spacingSmall",
-              "paddingTop": "@spacingSmall",
-              "text": ""
-            },       {
-              "type": "AlexaHeader",
-              "headerTitle": "${buData.properties.title}",
-              "headerSubtitle": "${buData.properties.subTitle}"
-            },
-            {
-              "type": "Text",
+          {
+              "type": "Container",
+              "width": "100%",
               "height": "100%",
-              "shrink": 1,
-              "textAlign": "center",
-              "textAlignVertical": "center",
-              "text": "${buData.properties.buStartText}"
-            }
-          ]
-        }
+              "bind": [
+                  {
+                      "name": "SIDE",
+                      "value": 100
+                  },
+                  {
+                    "name": "buOpacity",
+                    "value": 1
+                }
+              ],
+              "items": [
+                  {
+                      "type": "AlexaBackground",
+                      "backgroundColor": "gray"
+                  },
+               
+                  {
+                      "type": "AlexaButton",
+                      "id": "onClickButton",
+                      "alignSelf": "center",
+                      "buttonText": "click",
+                      "padding": "@spacingLarge",
+                      "primaryAction": {
+                          "type": "SetValue",
+                          "componentId": "bDText",
+                          "property": "text",
+                          "value": "You pressed Bu Command Btn!"
+                      }
+                  },
+                  {
+                      "type": "TouchWrapper",
+                      "items": {
+                          "type": "Frame",
+                          "id": "MyFrame",
+                          "backgroundColor": "hsl(${SIDE % 255}, 100%, 50%)",
+                          "width": "${SIDE}",
+                          "height": "${SIDE}",
+                          "opacity": "${buOpacity}"
+                      },
+                      "onPress": [
+                        {
+                          "type": "SetValue",
+                          "componentId": "bDText",
+                          "property": "text",
+                          "value": "My Application name is Boat USERS"
+                        },
+          
+                          {
+                              "type": "slideInFromRight",
+                              "duration": 1000,
+                              "distance": "20vw"
+                          },
+                          {
+                            "type": "SetValue",
+                            "componentId": "bDText",
+                            "property": "text",
+                            "value": "The word is changed"
+                          },
+                          {
+                            "type": "slideInFromLeft",
+                            "duration": 1000,
+                            "distance": "20vw"
+                        }
+                      ]
+                  },
+                  {
+                      "type": "Text",
+                      "id": "bDText",
+                      "textAlignVertical": "center",
+                      "textAlign": "center",
+                      "paddingLeft": "@spacingSmall",
+                      "paddingRight": "@spacingSmall",
+                      "paddingTop": "@spacingSmall",
+                      "text": "thisText"
+                  },
+                  {
+                      "type": "AlexaHeader",
+                      "headerTitle": "${buData.properties.title}",
+                      "headerSubtitle": "${buData.properties.subTitle}"
+                  },
+                  {
+                      "type": "Text",
+                      "height": "100%",
+                      "shrink": 1,
+                      "textAlign": "center",
+                      "textAlignVertical": "center",
+                      "text": "${buData.properties.buStartText}"
+                  }
+              ]
+          }
       ]
-    }
+  },
+  "commands": {
+    "slideInFromRight": {
+        "parameters": [
+            "distance"
+        ],
+        "command": {
+            "type": "AnimateItem",
+            "easing": "ease-in-out",
+            "duration": 1500,
+            "values": [    
+                {
+                "property": "SIDE",
+                "from": 100,
+                "to": 20
+                }
+                ,
+                {
+                "property": "buOpacity",
+                 "from": 1,
+                 "to": 0
+               }
+            ]
+        }
+    },
+    "slideInFromLeft": {
+      "parameters": [
+          "distance"
+      ],
+      "command": {
+          "type": "AnimateItem",
+          "easing": "ease-in-out",
+          "duration": 1500,
+          "values": [  
+            {
+              "property": "buOpacity",
+               "from": 0,
+               "to": 1
+             },  
+              {
+              "property": "SIDE",
+              "from": 20,
+              "to": 100
+              }
+              
+           
+          ]
+      }
   }
+}
+ 
+}
