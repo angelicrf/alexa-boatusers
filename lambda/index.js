@@ -7,7 +7,6 @@
 const AWS = require("aws-sdk");
 const lambda = new AWS.Lambda();
 const myRequest = require("https");
-const { onclickAToken } = require("./retreiveAccessToken");
 let thisState = "ON";
 
 const callChildLambdaFunc = async (thisName) => {
@@ -142,125 +141,8 @@ const sendChangeReportEvent = async (thisToken) => {
     req.end();
   });
 };
-const apiPowerControlResponse = async (event, context) => {
-  var requestMethod = JSON.parse(event.body).PowerHeader.name;
-  var responseHeader = JSON.parse(event.body).PowerHeader;
-  responseHeader.namespace = "Alexa";
-  responseHeader.name = "Response";
-  responseHeader.messageId = responseHeader.messageId + "-R";
-  responseHeader.correlationToken = responseHeader.messageId + "-R";
-  var requestToken = JSON.parse(event.body).powerToken;
-  //var powerResult;
-  thisState = "";
-
-  if (requestMethod === "TurnOn") {
-    //powerResult = "ON";
-    thisState = "ON";
-  } else if (requestMethod === "TurnOff") {
-    //powerResult = "OFF";
-    thisState = "OFF";
-  }
-  // Return the updated powerState.  Always include EndpointHealth in your Alexa.Response
-  var contextResult = {
-    properties: [
-      {
-        namespace: "Alexa.PowerController",
-        name: "powerState",
-        value: thisState,
-        timeOfSample: "2022-11-20T16:20:50.52Z", //retrieve from result.
-        uncertaintyInMilliseconds: 500,
-      },
-      {
-        namespace: "Alexa.EndpointHealth",
-        name: "connectivity",
-        value: {
-          value: "OK",
-        },
-        timeOfSample: "2022-11-20T22:43:17.877738+00:00",
-        uncertaintyInMilliseconds: 0,
-      },
-    ],
-  };
-  var response = {
-    context: contextResult,
-
-    event: {
-      header: responseHeader,
-      endpoint: {
-        scope: {
-          type: "BearerToken",
-          token: requestToken,
-        },
-        endpointId: "sample-switch-01",
-      },
-      payload: {},
-    },
-  };
-  log("DEBUG", "Alexa.PowerController ", JSON.stringify(response));
-  context.succeed(response);
-};
-const apiStateReportResponse = async (event, context) => {
-  var responseHeader = JSON.parse(event.body).repHeader; // an object
-  var requestToken = JSON.parse(event.body).repToken;
-
-  var contextResult = {
-    properties: [
-      {
-        namespace: "Alexa.PowerController",
-        name: "powerState",
-        value: thisState,
-        timeOfSample: "2022-11-20T16:20:50.52Z", //retrieve from result.
-        uncertaintyInMilliseconds: 50,
-      },
-      {
-        namespace: "Alexa.EndpointHealth",
-        name: "connectivity",
-        value: {
-          value: "OK",
-        },
-        timeOfSample: "2022-11-20T22:43:17.877738+00:00",
-        uncertaintyInMilliseconds: 0,
-      },
-      {
-        namespace: "Alexa.EndpointHealth",
-        name: "battery",
-        value: {
-          health: {
-            state: "WARNING",
-            reasons: ["LOW_CHARGE"],
-          },
-          levelPercentage: 45,
-        },
-        timeOfSample: "2022-11-20T16:20:50Z",
-        uncertaintyInMilliseconds: 0,
-      },
-    ],
-  };
-  var response = {
-    context: contextResult,
-
-    event: {
-      header: responseHeader,
-      endpoint: {
-        scope: {
-          type: "BearerToken",
-          token: requestToken,
-        },
-        endpointId: "sample-switch-01",
-      },
-      payload: {},
-    },
-  };
-  log(
-    "DEBUG Angelique Boat Users State Report API ",
-    "Alexa.PowerController ",
-    JSON.stringify(response)
-  );
-
-  await getUserProfileInfo(requestToken);
-  context.succeed(response);
-};
 const handleStateReport = async (request, context) => {
+  console.log(JSON.stringify(request));
   var requestMethod = request.directive.header.name;
   var responseHeader = request.directive.header;
   responseHeader.namespace = "Alexa";
@@ -604,6 +486,29 @@ const buildResponse = (options) => {
   }
   return response;
 };
+const buildDirectiveResponse = (options, thisDirective) => {
+  let response = {
+    version: "1.0",
+    response: {
+      outputSpeech: {
+        type: "PlainText",
+        text: options.speechText,
+      },
+      directives: [thisDirective],
+      shouldEndSession: options.endSession,
+    },
+  };
+  if (options.repromptText) {
+    response.response.reprompt = {
+      outputSpeech: {
+        type: "PlainText",
+        text: options.repromptText,
+      },
+    };
+  }
+  console.log(JSON.stringify(response));
+  return response;
+};
 const handleStopIntent = (request, context) => {
   console.log("stop Intent Callled");
 
@@ -693,114 +598,122 @@ const handleFallbackEvent = (request, context) => {
   options.endSession = false;
   context.succeed(buildResponse(options));
 };
-const handleAplEvent = (request, context) => {
-  console.log("APL Event Callled");
+const apiPowerControlResponse = async (event, context) => {
+  var requestMethod = JSON.parse(event.body).powerHeader.name;
+  var responseHeader = JSON.parse(event.body).powerHeader;
+  responseHeader.namespace = "Alexa";
+  responseHeader.name = "Response";
+  responseHeader.messageId = responseHeader.messageId + "-R";
+  responseHeader.correlationToken = responseHeader.messageId + "-R";
+  var requestToken = JSON.parse(event.body).powerToken;
+  //var powerResult;
+  thisState = "";
 
-  let options = {
-    speechText: "",
-    repromptText: "",
-    endSession: "",
+  if (requestMethod === "TurnOn") {
+    //powerResult = "ON";
+    thisState = "ON";
+  } else if (requestMethod === "TurnOff") {
+    //powerResult = "OFF";
+    thisState = "OFF";
+  }
+  // Return the updated powerState.  Always include EndpointHealth in your Alexa.Response
+  var contextResult = {
+    properties: [
+      {
+        namespace: "Alexa.PowerController",
+        name: "powerState",
+        value: thisState,
+        timeOfSample: "2022-11-20T16:20:50.52Z", //retrieve from result.
+        uncertaintyInMilliseconds: 500,
+      },
+      {
+        namespace: "Alexa.EndpointHealth",
+        name: "connectivity",
+        value: {
+          value: "OK",
+        },
+        timeOfSample: "2022-11-20T22:43:17.877738+00:00",
+        uncertaintyInMilliseconds: 0,
+      },
+    ],
   };
-  options.speechText = "APL Event called";
-  options.repromptText = "APL Event called?";
-  options.endSession = true;
-  context.succeed(buildResponse(options));
+  var response = {
+    context: contextResult,
+
+    event: {
+      header: responseHeader,
+      endpoint: {
+        scope: {
+          type: "BearerToken",
+          token: requestToken,
+        },
+        endpointId: "sample-switch-01",
+      },
+      payload: {},
+    },
+  };
+  log("DEBUG", "Alexa.PowerController API", JSON.stringify(response));
+  context.succeed(response);
 };
-const alexaApiRequestsProcess = async () => {
-  // generate a new access token to launch and discovery
-  // use the access Token to send notification request
-  // use the access Token to send state change report request
-  //------
-  // generate access token to make alexa requests
-  let secondAToken = await onclickAToken();
-  // use the second access Token to make alexa requests
-  await apiRequestReportState(secondAToken);
-};
-const apiRequestReportState = (thisToken) => {
-  return new Promise((resolve, reject) => {
-    var options = {
-      method: "POST",
-      hostname: "76ewqh4kz26525z22jjuyzooqy0ziulc.lambda-url.us-east-1.on.aws",
-      path: "/?alexaEvent=ReportState",
-      headers: {
-        "Content-Type": "application/json",
+const apiStateReportResponse = async (event, context) => {
+  var responseHeader = JSON.parse(event.body).repHeader; // an object
+  var requestToken = JSON.parse(event.body).repToken;
+
+  var contextResult = {
+    properties: [
+      {
+        namespace: "Alexa.PowerController",
+        name: "powerState",
+        value: thisState,
+        timeOfSample: "2022-11-20T16:20:50.52Z", //retrieve from result.
+        uncertaintyInMilliseconds: 50,
       },
-      maxRedirects: 20,
-    };
-
-    var req = myRequest.request(options, function (res) {
-      var chunks = [];
-
-      res.on("data", function (chunk) {
-        chunks.push(chunk);
-      });
-
-      res.on("end", function (chunk) {
-        var body = Buffer.concat(chunks);
-        console.log(body.toString());
-      });
-
-      res.on("error", function (error) {
-        console.error(error);
-      });
-    });
-
-    var postData = JSON.stringify({
-      repHeader: {
-        namespace: "Alexa",
-        name: "ReportState",
-        messageId: "newUUI",
+      {
+        namespace: "Alexa.EndpointHealth",
+        name: "connectivity",
+        value: {
+          value: "OK",
+        },
+        timeOfSample: "2022-11-20T22:43:17.877738+00:00",
+        uncertaintyInMilliseconds: 0,
       },
-      repToken: `${thisToken}`,
-    });
-
-    req.write(postData);
-
-    req.end();
-  });
-};
-const apiRequestPowerControl = (thisToken, thisName) => {
-  return new Promise((resolve, reject) => {
-    var options = {
-      method: "POST",
-      hostname: "76ewqh4kz26525z22jjuyzooqy0ziulc.lambda-url.us-east-1.on.aws",
-      path: "/?alexaEvent=PowerController",
-      headers: {
-        "Content-Type": "application/json",
+      {
+        namespace: "Alexa.EndpointHealth",
+        name: "battery",
+        value: {
+          health: {
+            state: "WARNING",
+            reasons: ["LOW_CHARGE"],
+          },
+          levelPercentage: 45,
+        },
+        timeOfSample: "2022-11-20T16:20:50Z",
+        uncertaintyInMilliseconds: 0,
       },
-      maxRedirects: 20,
-    };
+    ],
+  };
+  var response = {
+    context: contextResult,
 
-    var req = myRequest.request(options, function (res) {
-      var chunks = [];
-
-      res.on("data", function (chunk) {
-        chunks.push(chunk);
-      });
-
-      res.on("end", function (chunk) {
-        var body = Buffer.concat(chunks);
-        console.log(body.toString());
-      });
-
-      res.on("error", function (error) {
-        console.error(error);
-      });
-    });
-
-    var postData = JSON.stringify({
-      powerHeader: {
-        namespace: "Alexa",
-        name: `${thisName}`, //TurnOn TurnOff
-        messageId: "newUUI",
+    event: {
+      header: responseHeader,
+      endpoint: {
+        scope: {
+          type: "BearerToken",
+          token: requestToken,
+        },
+        endpointId: "sample-switch-01",
       },
-      powerToken: `${thisToken}`,
-    });
+      payload: {},
+    },
+  };
+  log(
+    "DEBUG Angelique Boat Users State Report API ",
+    "Alexa.PowerController ",
+    JSON.stringify(response)
+  );
 
-    req.write(postData);
-
-    req.end();
-  });
+  context.succeed(response);
 };
 const alexaAPLRequest = () => {
   const aplDocumentId = "busersAplResponse";
@@ -823,6 +736,81 @@ const alexaAPLRequest = () => {
     },
     datasources: dataSource,
   };
+  //   const DOCUMENT_ID = "buTestAPL";
+
+  // const datasource = {
+  //     "headlineTemplateData": {
+  //         "type": "object",
+  //         "objectId": "headlineSample",
+  //         "properties": {
+  //             "backgroundImage": {
+  //                 "contentDescription": null,
+  //                 "smallSourceUrl": null,
+  //                 "largeSourceUrl": null,
+  //                 "sources": [
+  //                     {
+  //                         "url": "https://robbreport.com/wp-content/uploads/2019/07/adastra-1-courtesy-jochen-manz_orion-shuttleworth.jpg",
+  //                         "size": "large"
+  //                     }
+  //                 ]
+  //             },
+  //             "textContent": {
+  //                 "primaryText": {
+  //                     "type": "PlainText",
+  //                     "text": "Welcome to The Boat USers App"
+  //                 }
+  //             },
+  //             "logoUrl": "https://i.etsystatic.com/25493577/r/il/bf60c2/4022952886/il_794xN.4022952886_8r9f.jpg",
+  //             "hintText": "Try, \"Alexa, bu turn on switch or bu turn off switch\""
+  //         }
+  //     }
+  // };
+  //     return {
+  //         type: "Alexa.Presentation.APL.RenderDocument",
+  //         token: "TestTokenBU",
+  //         document: {
+  //     "type": "APL",
+  //     "version": "2022.2",
+  //     "theme": "dark",
+  //     "import": [
+  //         {
+  //             "name": "alexa-layouts",
+  //             "version": "1.5.0"
+  //         }
+  //     ],
+  //     "mainTemplate": {
+  //         "parameters": [
+  //             "payload"
+  //         ],
+  //         "item": [
+  //             {
+  //                 "type": "AlexaHeadline",
+  //                 "id": "PlantHeadline",
+  //                 "primaryText": "${payload.headlineTemplateData.properties.textContent.primaryText.text}",
+  //                 "headerBackButton": false,
+  //                 "headerAttributionImage": "${payload.headlineTemplateData.properties.logoUrl}",
+  //                 "headerAttributionPrimacy": true,
+  //                 "footerHintText": "${payload.headlineTemplateData.properties.hintText}",
+  //                 "backgroundImageSource": "${payload.headlineTemplateData.properties.backgroundImage.sources[0].url}",
+  //                 "backgroundColorOverlay": false
+  //             }
+  //         ]
+  //     }
+  // },
+  //         datasources: datasource
+  //     }
+};
+const handleAplEvent = (request, context) => {
+  let getAplRequest = alexaAPLRequest();
+  let options = {
+    speechText: "",
+    repromptText: "",
+    endSession: "",
+  };
+  options.speechText = "APL Boat Users Event called";
+  options.repromptText = "APL Event called?";
+  options.endSession = true;
+  context.succeed(buildDirectiveResponse(options, getAplRequest));
 };
 exports.handler = (request, context, callback) => {
   if (JSON.stringify(request.requestContext) != undefined) {
@@ -855,18 +843,35 @@ exports.handler = (request, context, callback) => {
 
       if (paramValue == "repState") {
         if (JSON.stringify(request.body) != undefined) {
-          handleStateReport(request, context);
+          apiStateReportResponse(request, context);
+        }
+      }
+      if (paramValue == "PowerController") {
+        if (JSON.stringify(request.body) != undefined) {
+          apiPowerControlResponse(request, context);
         }
       }
     }
   }
   if (request.request != undefined) {
-    console.log("entered to type");
+    console.log(`entered to type`);
     if (request.request.type === "LaunchRequest") {
-      handleLaunchIntent(request, context);
+      if (
+        JSON.stringify(
+          request.context.System.device.supportedInterfaces[
+            "Alexa.Presentation.APL"
+          ]
+        ) != undefined
+      ) {
+        console.log("APL is supported");
+        handleAplEvent(request, context);
+      } else {
+        handleLaunchIntent(request, context);
+      }
     }
     if (request.request.type === "IntentRequest") {
       if (request.request.intent.name === "AMAZON.StopIntent") {
+        console.log("stop Request Callled");
         handleStopIntent(request, context);
       }
       if (request.request.intent.name === "AMAZON.CancelIntent") {
@@ -884,7 +889,6 @@ exports.handler = (request, context, callback) => {
       if (request.request.intent.name === "AMAZON.FallbackIntent") {
         handleFallbackEvent(request, context);
       }
-      // handle APL request
     }
   }
   if (request.directive != undefined) {
