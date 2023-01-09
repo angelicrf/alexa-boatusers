@@ -724,6 +724,21 @@ const alexaAPLRequest = () => {
         title: "Welcome to Boat Users Alexa Smart App!",
         subTitle: "BoatUsers App uses both primitive and responsive components",
         buStartText: "BoatUsersStart",
+        buHeatherAttributeText: "BuLogo",
+        welcomeNote: "Welcome to BU App",
+        onClickBuDataText: "Btn is clicked",
+        onPressBuDataText: "Animation changed the Text",
+        onPressAnimReverseBuDataText: "Reverse Animation changed the Text",
+        componentColors: {
+          buHeatherColor: "rgba(251, 29, 9, 0.81)",
+          buMainLayoutColor: "rgba(99, 84, 191, 0.48)",
+          buAnimBoxColor: "rgba(33, 207, 50, 0.81)",
+        },
+        componentBtnIcons: {
+          playIcon: "ic_play",
+          stopIcon: "ic_stop",
+          pauseIcon: "ic_pause",
+        },
       },
     },
   };
@@ -736,8 +751,7 @@ const alexaAPLRequest = () => {
     },
     datasources: dataSource,
   };
-  //   const DOCUMENT_ID = "buTestAPL";
-
+  // const DOCUMENT_ID = "buTestAPL";
   // const datasource = {
   //     "headlineTemplateData": {
   //         "type": "object",
@@ -766,36 +780,11 @@ const alexaAPLRequest = () => {
   //     }
   // };
   //     return {
-  //         type: "Alexa.Presentation.APL.RenderDocument",
-  //         token: "TestTokenBU",
-  //         document: {
-  //     "type": "APL",
-  //     "version": "2022.2",
-  //     "theme": "dark",
-  //     "import": [
-  //         {
-  //             "name": "alexa-layouts",
-  //             "version": "1.5.0"
-  //         }
-  //     ],
-  //     "mainTemplate": {
-  //         "parameters": [
-  //             "payload"
-  //         ],
-  //         "item": [
-  //             {
-  //                 "type": "AlexaHeadline",
-  //                 "id": "PlantHeadline",
-  //                 "primaryText": "${payload.headlineTemplateData.properties.textContent.primaryText.text}",
-  //                 "headerBackButton": false,
-  //                 "headerAttributionImage": "${payload.headlineTemplateData.properties.logoUrl}",
-  //                 "headerAttributionPrimacy": true,
-  //                 "footerHintText": "${payload.headlineTemplateData.properties.hintText}",
-  //                 "backgroundImageSource": "${payload.headlineTemplateData.properties.backgroundImage.sources[0].url}",
-  //                 "backgroundColorOverlay": false
-  //             }
-  //         ]
-  //     }
+  //       type: "Alexa.Presentation.APL.RenderDocument",
+  // token: "buAPLToken",
+  // document: {
+  //   type: "Link",
+  //   src: "doc://alexa/apl/documents/" + DOCUMENT_ID,
   // },
   //         datasources: datasource
   //     }
