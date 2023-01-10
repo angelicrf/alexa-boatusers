@@ -600,7 +600,19 @@ const handleFallbackEvent = (request, context) => {
 };
 const apiPowerControlResponse = async (event, context) => {
   var requestMethod = JSON.parse(event.body).powerHeader.name;
-  var responseHeader = JSON.parse(event.body).powerHeader;
+  var responseHeader = {};
+  if (JSON.parse(event.body).powerHeader.namespace == undefined) {
+    var mokeResponseHeather = {
+      powerHeader: {
+        namespace: JSON.parse(event.body).powerHeader.namespacedm,
+        name: JSON.parse(event.body).powerHeader.name,
+        messageId: JSON.parse(event.body).powerHeader.messageId,
+      },
+      powerToken: JSON.parse(event.body).powerToken,
+    };
+    console.log(JSON.stringify(mokeResponseHeather));
+    responseHeader = mokeResponseHeather;
+  }
   responseHeader.namespace = "Alexa";
   responseHeader.name = "Response";
   responseHeader.messageId = responseHeader.messageId + "-R";
